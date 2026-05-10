@@ -40,9 +40,19 @@ html,body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text)
 .login-logo-sub{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;}
 .lf{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
 .lf label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);}
-.lf input{height:44px;border:1.5px solid var(--border);border-radius:8px;padding:0 14px;font-size:15px;font-family:'Barlow',sans-serif;color:var(--text);outline:none;}
-.lf input:focus{border-color:var(--pur);box-shadow:0 0 0 3px rgba(59,3,138,.07);}
-.login-err{font-size:13px;color:var(--red);min-height:20px;margin-bottom:8px;font-weight:600;}
+.lf input,.lf select{height:44px;border:1.5px solid var(--border);border-radius:8px;padding:0 14px;font-size:15px;font-family:'Barlow',sans-serif;color:var(--text);outline:none;background:var(--white);width:100%;}
+.lf input:focus,.lf select:focus{border-color:var(--pur);box-shadow:0 0 0 3px rgba(59,3,138,.07);}
+.login-err{font-size:13px;color:var(--red);min-height:18px;margin-bottom:4px;font-weight:600;text-align:center;}
+.pin-dots{display:flex;justify-content:center;gap:14px;margin:18px 0 20px;}
+.pdot{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--border);background:transparent;transition:all .15s;}
+.pdot.filled{background:var(--sb);border-color:var(--sb);}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.nb{height:58px;border:1.5px solid var(--border);border-radius:10px;background:var(--white);font-size:24px;font-weight:700;color:var(--text);cursor:pointer;font-family:'Barlow',sans-serif;transition:all .12s;user-select:none;}
+.nb:hover{background:var(--pur-l);border-color:var(--pur);}
+.nb:active{transform:scale(.93);}
+.nb-clear{font-size:18px;color:var(--muted);}
+.nb-enter{background:var(--gold);border-color:var(--gold);color:var(--sb);font-size:18px;font-weight:700;}
+.nb-enter:hover{background:var(--gold-d);}
 
 /* ── SIDEBAR ───────────────────────────────────────────────────── */
 .sidebar{
@@ -303,10 +313,34 @@ tbody td{padding:12px 14px;vertical-align:middle;}
         <div class="login-logo-sub">Petty Cash</div>
       </div>
     </div>
-    <div class="lf"><label>Email</label><input type="email" id="l-email" placeholder="admin@royaleng-me.com" autocomplete="username"></div>
-    <div class="lf"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password"></div>
+    <div class="lf" style="margin-bottom:0;">
+      <label>Who are you?</label>
+      <select id="l-user" onchange="pinReset()">
+        <option value="">Select your name…</option>
+        <option value="josette">Josette</option>
+        <option value="jubina">Jubina</option>
+        <option value="manager">Manager</option>
+      </select>
+    </div>
+    <div class="pin-dots">
+      <div class="pdot" id="pd0"></div><div class="pdot" id="pd1"></div>
+      <div class="pdot" id="pd2"></div><div class="pdot" id="pd3"></div>
+    </div>
+    <div class="numpad">
+      <button class="nb" onclick="pinKey('1')">1</button>
+      <button class="nb" onclick="pinKey('2')">2</button>
+      <button class="nb" onclick="pinKey('3')">3</button>
+      <button class="nb" onclick="pinKey('4')">4</button>
+      <button class="nb" onclick="pinKey('5')">5</button>
+      <button class="nb" onclick="pinKey('6')">6</button>
+      <button class="nb" onclick="pinKey('7')">7</button>
+      <button class="nb" onclick="pinKey('8')">8</button>
+      <button class="nb" onclick="pinKey('9')">9</button>
+      <button class="nb nb-clear" onclick="pinKey('back')">⌫</button>
+      <button class="nb" onclick="pinKey('0')">0</button>
+      <button class="nb nb-enter" onclick="pinEnter()">→</button>
+    </div>
     <div class="login-err" id="l-err"></div>
-    <button class="btn gold" style="width:100%;justify-content:center;padding:13px;" id="l-btn" onclick="doLogin()">Sign In →</button>
   </div>
 </div>
 
@@ -636,7 +670,6 @@ tbody td{padding:12px 14px;vertical-align:middle;}
 
 <!-- ── FIREBASE ───────────────────────────────────────────────── -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
 <script>
@@ -660,9 +693,8 @@ window.addEventListener('error', ev => {
 });
 
 firebase.initializeApp(FC);
-const auth = firebase.auth();
-const db   = firebase.database();
-console.log('[init] Firebase ready — auth:', !!auth, '| db:', !!db);
+const db = firebase.database();
+console.log('[init] Firebase ready | db:', !!db);
 
 db.ref('.info/connected').on('value', snap => {
   const on = snap.val() === true;
@@ -698,77 +730,69 @@ let commentInvoiceId = null;
 let cfmResFn         = null;
 
 /* ═══════════════════════════════════════════════════════════════
-   AUTH
+   PIN AUTH
 ═══════════════════════════════════════════════════════════════ */
-// Known email → role/name/site mapping.
-// Adding a new user: create them in Firebase Auth, then add their email here
-// and redeploy — or create their /users/{uid} record manually in the DB console.
-const EMAIL_ROLES = {
-  'admin@royaleng-me.com':     { role: 'admin',   name: 'Josette', site: 'A' },
-  'hse.admin@royaleng-me.com': { role: 'entry',   name: 'Jubina',  site: 'B' },
-  'info@royaleng-me.com':      { role: 'manager', name: 'Manager', site: null }
-};
+let pinBuffer = '';
 
-auth.onAuthStateChanged(user => {
-  if (user) {
-    db.ref('users/' + user.uid).once('value', snap => {
-      const ur = snap.val();
-      if (!ur) {
-        // Auto-provision from known email mapping
-        const mapped = EMAIL_ROLES[user.email];
-        if (mapped) {
-          db.ref('users/' + user.uid)
-            .set({ ...mapped, email: user.email })
-            .then(() => bootApp(user, mapped));
-        } else {
-          auth.signOut();
-          showLoginErr('No account found for this email. Contact admin.');
-        }
-      } else {
-        bootApp(user, ur);
-      }
-    });
-  } else {
-    showLogin();
-  }
-});
+// Seed default users on first load if /users doesn't exist
+async function seedUsers() {
+  const snap = await db.ref('users').once('value');
+  if (snap.exists()) return;
+  const [h1, h2, h3] = await Promise.all([sha256('2020'), sha256('2026'), sha256('2007')]);
+  await db.ref('users').set({
+    josette: { name:'Josette', role:'admin',   site:'A',    pinHash: h1 },
+    jubina:  { name:'Jubina',  role:'entry',   site:'B',    pinHash: h2 },
+    manager: { name:'Manager', role:'manager', site:null,   pinHash: h3 }
+  });
+  console.log('[seed] users seeded');
+}
+seedUsers();
 
-function bootApp(user, ur) {
-  ur = ur || {};
-  CU = { uid: user.uid, role: ur.role || 'admin', name: ur.name || user.email, site: ur.site || null, email: user.email };
-  showApp();
-  subscribeData();
+// Show login on load
+showLogin();
+
+function pinKey(d) {
+  showLoginErr('');
+  if (d === 'back') { pinBuffer = pinBuffer.slice(0, -1); updatePinDots(); return; }
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += d;
+  updatePinDots();
+  if (pinBuffer.length === 4) setTimeout(pinEnter, 120); // brief pause so last dot shows
 }
 
-/* ── LOGIN ────────────────────────────────────────────────────── */
-document.getElementById('l-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+function pinReset() { pinBuffer = ''; updatePinDots(); showLoginErr(''); }
 
-async function doLogin() {
-  console.log('[login] doLogin() fired');
-  const email = document.getElementById('l-email').value.trim();
-  const pass  = document.getElementById('l-pass').value;
-  const btn   = document.getElementById('l-btn');
-  console.log('[login] email:', email, '| auth ready:', !!auth);
-  showLoginErr('');
-  if (!email || !pass) { showLoginErr('Email and password are required.'); return; }
-  btn.disabled = true; btn.textContent = 'Signing in…';
+function updatePinDots() {
+  for (let i = 0; i < 4; i++)
+    document.getElementById('pd' + i).classList.toggle('filled', i < pinBuffer.length);
+}
+
+async function pinEnter() {
+  const username = document.getElementById('l-user').value;
+  if (!username) { showLoginErr('Select your name first.'); pinReset(); return; }
+  if (pinBuffer.length < 4) { showLoginErr('Enter all 4 digits.'); return; }
+  const hash = await sha256(pinBuffer);
+  pinBuffer = ''; updatePinDots();
   try {
-    await auth.signInWithEmailAndPassword(email, pass);
+    const snap = await db.ref('users/' + username).once('value');
+    const ur   = snap.val();
+    if (!ur || ur.pinHash !== hash) { showLoginErr('Wrong PIN, try again.'); return; }
+    bootApp(username, ur);
   } catch (e) {
-    console.error('[login] auth error:', e.code, e.message);
-    const msgs = {
-      'auth/user-not-found':      'No account with that email.',
-      'auth/wrong-password':      'Incorrect password.',
-      'auth/invalid-credential':         'Incorrect email or password.',
-      'auth/invalid-login-credentials':  'Incorrect email or password.',   // SDK v9.6+
-      'auth/invalid-email':       'Invalid email address.',
-      'auth/operation-not-allowed':'Email/password sign-in is not enabled — check Firebase Console → Authentication.',
-      'auth/too-many-requests':   'Too many attempts. Try again later.',
-      'auth/network-request-failed':'Network error. Check your connection.'
-    };
-    showLoginErr(msgs[e.code] || ('Sign-in failed: ' + e.code));
-    btn.disabled = false; btn.textContent = 'Sign In →';
+    console.error('[login]', e);
+    showLoginErr('Connection error — check your network.');
   }
+}
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function bootApp(username, ur) {
+  CU = { uid: username, role: ur.role, name: ur.name, site: ur.site || null };
+  showApp();
+  subscribeData();
 }
 
 function showLoginErr(msg) { document.getElementById('l-err').textContent = msg; }
@@ -790,11 +814,13 @@ function showApp() {
   nav('dashboard');
 }
 
-async function doSignOut() {
+function doSignOut() {
   detachListeners();
   periods=[]; invoices=[]; advances=[]; people=[]; users=[]; auditLog=[];
   activePeriodId=null; CU=null;
-  await auth.signOut();
+  document.getElementById('l-user').value = '';
+  pinReset();
+  showLogin();
 }
 
 /* ═══════════════════════════════════════════════════════════════
