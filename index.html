@@ -759,7 +759,8 @@ async function doLogin() {
     const msgs = {
       'auth/user-not-found':      'No account with that email.',
       'auth/wrong-password':      'Incorrect password.',
-      'auth/invalid-credential':  'Incorrect email or password.',   // SDK v9+
+      'auth/invalid-credential':         'Incorrect email or password.',
+      'auth/invalid-login-credentials':  'Incorrect email or password.',   // SDK v9.6+
       'auth/invalid-email':       'Invalid email address.',
       'auth/operation-not-allowed':'Email/password sign-in is not enabled — check Firebase Console → Authentication.',
       'auth/too-many-requests':   'Too many attempts. Try again later.',
