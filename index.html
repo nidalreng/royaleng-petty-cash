@@ -496,6 +496,7 @@ tbody td{padding:12px 14px;vertical-align:middle;}
               <select class="fs" id="inv-f-purchaser" onchange="renderInvoices()"><option value="">All purchasers</option></select>
               <select class="fs" id="inv-f-status" onchange="renderInvoices()"><option value="">All statuses</option><option value="Draft">Draft</option><option value="Submitted">Submitted</option></select>
               <select class="fs" id="inv-f-cat" onchange="renderInvoices()"><option value="">All categories</option></select>
+              <select class="fs" id="inv-f-site" onchange="activeSiteFilter=this.value;renderInvoices();renderAdvances();renderReports()"><option value="">All sites</option><option value="A">Site A</option><option value="B">Site B</option></select>
             </div>
             <button class="btn gold sm" id="inv-new-btn" onclick="nav('invoice-form')">＋ New Invoice</button>
           </div>
@@ -503,7 +504,7 @@ tbody td{padding:12px 14px;vertical-align:middle;}
         <div class="tbl-wrap">
           <table><thead><tr>
             <th>Invoice No</th><th>Vendor / Project</th><th>Requested By</th>
-            <th>Purchased By</th><th>Entered By</th>
+            <th>Purchased By</th><th>Entered By</th><th>Site</th>
             <th style="text-align:right">Amount (KWD)</th>
             <th>Status</th><th></th>
           </tr></thead><tbody id="inv-tbody"></tbody></table>
@@ -544,6 +545,10 @@ tbody td{padding:12px 14px;vertical-align:middle;}
           <div class="f"><label>Entered By</label><input class="ro" type="text" id="if-entered-by" readonly></div>
           <div class="f"><label>Notes</label><input type="text" id="if-notes" placeholder="Optional"></div>
         </div>
+        <div class="f2">
+          <div class="f"><label>Site *</label><select id="if-site"><option value="">— Select Site —</option><option value="A">Site A</option><option value="B">Site B</option></select></div>
+          <div class="f"></div>
+        </div>
       </div>
       <div class="inv-section">
         <div class="inv-sec-title">Line Items</div>
@@ -567,7 +572,10 @@ tbody td{padding:12px 14px;vertical-align:middle;}
     <div class="view" id="view-advances">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;">Cash Advances</div>
-        <button class="btn gold sm" id="adv-new-btn" onclick="openNewAdvance()">＋ New Advance</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select class="fs" id="adv-f-site" onchange="activeSiteFilter=this.value;document.getElementById('inv-f-site').value=this.value;renderInvoices();renderAdvances();renderReports()"><option value="">All sites</option><option value="A">Site A</option><option value="B">Site B</option></select>
+          <button class="btn gold sm" id="adv-new-btn" onclick="openNewAdvance()">＋ New Advance</button>
+        </div>
       </div>
 
       <!-- New Advance inline form -->
@@ -581,6 +589,10 @@ tbody td{padding:12px 14px;vertical-align:middle;}
         <div class="f2">
           <div class="f"><label>Date *</label><input type="date" id="af-date"></div>
           <div class="f"><label>Notes</label><input type="text" id="af-notes" placeholder="Optional"></div>
+        </div>
+        <div class="f2">
+          <div class="f"><label>Site *</label><select id="af-site"><option value="">— Select Site —</option><option value="A">Site A</option><option value="B">Site B</option></select></div>
+          <div class="f"></div>
         </div>
         <div class="btn-row" style="margin-top:10px;">
           <button class="btn out sm" onclick="closeAdvForm()">Cancel</button>
@@ -597,7 +609,8 @@ tbody td{padding:12px 14px;vertical-align:middle;}
     <div class="view" id="view-reports">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;">Reports</div>
-        <div style="display:flex;gap:8px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select class="fs" id="rep-f-site" onchange="activeSiteFilter=this.value;document.getElementById('inv-f-site').value=this.value;document.getElementById('adv-f-site').value=this.value;renderInvoices();renderAdvances();renderReports()"><option value="">All sites</option><option value="A">Site A</option><option value="B">Site B</option></select>
           <button class="btn out sm" onclick="exportCSV()">↓ CSV</button>
         </div>
       </div>
@@ -619,6 +632,12 @@ tbody td{padding:12px 14px;vertical-align:middle;}
         <div class="card">
           <div class="card-hdr"><div class="card-title">Invoice Summary</div></div>
           <div style="padding:14px 16px;" id="rep-summary"></div>
+        </div>
+      </div>
+      <div class="report-grid">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Spending by Site</div></div>
+          <div style="padding:14px 16px;" id="rep-by-site"></div>
         </div>
       </div>
     </div>
@@ -716,7 +735,8 @@ let advances = [];
 let people   = [];
 let users    = [];
 let auditLog = [];
-let activePeriodId = null;
+let activePeriodId  = null;
+let activeSiteFilter = '';
 
 // Listeners to detach on sign-out
 const listeners = {};
@@ -912,6 +932,11 @@ function nav(viewName) {
     editingInvoiceId = null;
     document.getElementById('inv-form-title').textContent = 'New Invoice';
   }
+  // Sync all site filter dropdowns to current activeSiteFilter
+  ['inv-f-site','adv-f-site','rep-f-site'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = activeSiteFilter;
+  });
   if (viewName === 'reports') renderReports();
 }
 
@@ -1019,12 +1044,14 @@ function renderInvoices() {
   const fPurch  = document.getElementById('inv-f-purchaser').value;
   const fStatus = document.getElementById('inv-f-status').value;
   const fCat    = document.getElementById('inv-f-cat').value;
+  const fSite   = activeSiteFilter;
 
   let list = invoices.filter(i => {
     if (i.periodId !== pid) return false;
     if (fPurch  && i.purchasedByPersonId !== fPurch)  return false;
     if (fStatus && i.status !== fStatus)               return false;
     if (fCat    && i.category !== fCat)                return false;
+    if (fSite   && i.site !== fSite)                   return false;
     if (search) {
       const hay = [i.invoiceNo, i.vendor, i.category, i.requestedBy, i.purchasedByName, i.projectName, i.projectRef].join(' ').toLowerCase();
       if (!hay.includes(search)) return false;
@@ -1051,6 +1078,7 @@ function renderInvoices() {
       <td class="td-muted">${esc(inv.requestedBy||'—')}</td>
       <td>${esc(inv.purchasedByName||'—')}</td>
       <td class="td-muted">${esc(inv.enteredByName||'—')}</td>
+      <td class="td-muted">${inv.site ? 'Site '+inv.site : '—'}</td>
       <td style="text-align:right" class="td-amt">${fmt(inv.grandTotal)}</td>
       <td><span class="pill ${inv.status.toLowerCase()}">${inv.status}</span>${hasComments ? ` <span class="comment-chip">💬 ${inv._commentCount}</span>` : ''}</td>
       <td>
@@ -1080,6 +1108,7 @@ function resetInvoiceForm() {
   document.getElementById('if-purch-by').value   = '';
   document.getElementById('if-entered-by').value = CU.name;
   document.getElementById('if-notes').value      = '';
+  document.getElementById('if-site').value       = '';
   document.getElementById('li-tbody').innerHTML  = '';
   document.getElementById('li-grand').textContent = 'Grand Total: 0.000 KWD';
   addLineItem();
@@ -1131,6 +1160,7 @@ function editInvoice(id) {
   document.getElementById('if-req-by').value     = inv.requestedBy || '';
   document.getElementById('if-entered-by').value = inv.enteredByName || CU.name;
   document.getElementById('if-notes').value      = inv.notes || '';
+  document.getElementById('if-site').value       = inv.site || '';
 
   // Purchased by
   setTimeout(() => {
@@ -1187,7 +1217,8 @@ async function saveInvoice(status) {
   const dup = invoices.find(i => i.periodId === activePeriodId && i.invoiceNo === invNo && i.id !== id);
   if (dup) { toast('Invoice number already exists in this period.', 'err'); return; }
 
-  const personSite = purchId ? (people.find(p => p.id === purchId)?.site || null) : null;
+  const manualSite = document.getElementById('if-site').value || null;
+  if (!manualSite) { toast('Please select a site.', 'err'); return; }
 
   const data = {
     periodId: activePeriodId,
@@ -1196,7 +1227,7 @@ async function saveInvoice(status) {
     requestedBy: reqBy, purchasedByPersonId: purchId, purchasedByName: purchName,
     enteredByUid: CU.uid, enteredByName: CU.name,
     lineItems, grandTotal, notes, status,
-    site: personSite || CU.site || null,
+    site: manualSite,
     updatedAt: Date.now()
   };
 
@@ -1340,6 +1371,7 @@ function openNewAdvance() {
   document.getElementById('af-amount').value   = '';
   document.getElementById('af-date').value     = today();
   document.getElementById('af-notes').value    = '';
+  document.getElementById('af-site').value     = '';
   document.getElementById('af-person').value   = '';
 }
 
@@ -1353,18 +1385,18 @@ async function saveAdvance() {
   const date       = document.getElementById('af-date').value;
   const notes      = document.getElementById('af-notes').value.trim();
 
+  const manualSite = document.getElementById('af-site').value;
+
   if (!personId) { toast('Select a person.', 'err'); return; }
   if (!amount || amount <= 0) { toast('Enter a valid amount.', 'err'); return; }
   if (!date) { toast('Date is required.', 'err'); return; }
+  if (!manualSite) { toast('Please select a site.', 'err'); return; }
   if (!activePeriodId) { toast('No active period.', 'err'); return; }
-
-  const person = people.find(p => p.id === personId);
-  const site   = person?.site || CU.site || 'B';
 
   const data = {
     periodId: activePeriodId, personId, personName: personName.replace(/ \(Site [AB]\)$/,''),
     amount, date, givenByUid: CU.uid, givenByName: CU.name,
-    site, notes, status: 'Open', cashReturned: 0, createdAt: Date.now()
+    site: manualSite, notes, status: 'Open', cashReturned: 0, createdAt: Date.now()
   };
 
   try {
@@ -1377,7 +1409,8 @@ async function saveAdvance() {
 
 function renderAdvances() {
   const pid    = activePeriodId;
-  const list   = advances.filter(a => a.periodId === pid).sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
+  const fSite  = activeSiteFilter;
+  const list   = advances.filter(a => a.periodId === pid && (!fSite || a.site === fSite)).sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
   const grid   = document.getElementById('adv-grid');
   const empty  = document.getElementById('adv-empty');
 
@@ -1476,21 +1509,30 @@ function viewAdvanceInvoices(advId) {
    REPORTS
 ═══════════════════════════════════════════════════════════════ */
 function renderReports() {
-  const pid  = activePeriodId;
-  const pinvs = invoices.filter(i => i.periodId === pid && i.status === 'Submitted');
-  const max   = pinvs.reduce((s, i) => s + (parseFloat(i.grandTotal)||0), 0);
+  const pid    = activePeriodId;
+  const fSite  = activeSiteFilter;
+  const pinvs  = invoices.filter(i => i.periodId === pid && i.status === 'Submitted' && (!fSite || i.site === fSite));
+  const max    = pinvs.reduce((s, i) => s + (parseFloat(i.grandTotal)||0), 0);
 
   renderBarChart('rep-by-cat', groupBy(pinvs, i => i.category || 'Uncategorized', i => parseFloat(i.grandTotal)||0), max);
   renderBarChart('rep-by-purchaser', groupBy(pinvs, i => i.purchasedByName || 'Unknown', i => parseFloat(i.grandTotal)||0), max);
   renderBarChart('rep-by-vendor', groupBy(pinvs, i => i.vendor, i => parseFloat(i.grandTotal)||0), max);
 
+  const advFiltered = advances.filter(a => a.periodId === pid && a.status === 'Open' && (!fSite || a.site === fSite));
   const el = document.getElementById('rep-summary');
   el.innerHTML = `
     <div class="bar-row"><span class="bar-label">Total Invoices</span><span class="bar-amt" style="font-size:18px;">${pinvs.length}</span></div>
     <div class="bar-row"><span class="bar-label">Total Amount</span><span class="bar-amt" style="font-size:18px;">${fmt(max)} KWD</span></div>
-    <div class="bar-row"><span class="bar-label">Open Advances</span><span class="bar-amt" style="font-size:18px;">${advances.filter(a=>a.periodId===pid&&a.status==='Open').length}</span></div>
+    <div class="bar-row"><span class="bar-label">Open Advances</span><span class="bar-amt" style="font-size:18px;">${advFiltered.length}</span></div>
     <div class="bar-row"><span class="bar-label">Avg Invoice</span><span class="bar-amt">${pinvs.length ? fmt(max/pinvs.length) : '0.000'} KWD</span></div>
   `;
+
+  // Site breakdown (always uses all submitted invoices for the period, ignoring site filter so comparison is visible)
+  const allPinvs = invoices.filter(i => i.periodId === pid && i.status === 'Submitted');
+  const siteA = allPinvs.filter(i => i.site === 'A').reduce((s,i) => s+(parseFloat(i.grandTotal)||0), 0);
+  const siteB = allPinvs.filter(i => i.site === 'B').reduce((s,i) => s+(parseFloat(i.grandTotal)||0), 0);
+  const siteMax = Math.max(siteA, siteB);
+  renderBarChart('rep-by-site', [['Site A', siteA], ['Site B', siteB]], siteMax || 1);
 }
 
 function groupBy(arr, keyFn, valFn) {
@@ -1513,14 +1555,15 @@ function renderBarChart(id, entries, max) {
 }
 
 function exportCSV() {
-  const rows = [['Period','Invoice No','Date','Vendor','Category','Project','Requested By','Purchased By','Entered By','Status','Grand Total (KWD)']];
+  const rows = [['Period','Invoice No','Date','Vendor','Category','Project','Requested By','Purchased By','Entered By','Site','Status','Grand Total (KWD)']];
   const pid = activePeriodId;
   const pName = periods.find(p=>p.id===pid)?.name||'';
-  invoices.filter(i=>i.periodId===pid).forEach(i => rows.push([
+  const fSite = activeSiteFilter;
+  invoices.filter(i=>i.periodId===pid && (!fSite||i.site===fSite)).forEach(i => rows.push([
     pName, i.invoiceNo||'', i.date||'', i.vendor||'', i.category||'',
     [i.projectName,i.projectRef].filter(Boolean).join(' · '),
-    i.requestedBy||'', i.purchasedByName||'', i.enteredByName||'', i.status||'',
-    fmt(i.grandTotal)
+    i.requestedBy||'', i.purchasedByName||'', i.enteredByName||'', i.site ? 'Site '+i.site : '',
+    i.status||'', fmt(i.grandTotal)
   ]));
   const csv  = rows.map(r => r.map(c => '"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
   const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
