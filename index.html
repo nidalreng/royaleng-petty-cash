@@ -734,17 +734,19 @@ let cfmResFn         = null;
 ═══════════════════════════════════════════════════════════════ */
 let pinBuffer = '';
 
-// Seed default users on first load if /users doesn't exist
+// Seed PIN users — checks for the josette key specifically so old Firebase Auth
+// records under random UIDs don't fool the exists() check.
 async function seedUsers() {
-  const snap = await db.ref('users').once('value');
-  if (snap.exists()) return;
+  const snap = await db.ref('users/josette').once('value');
+  if (snap.exists()) { console.log('[seed] users already present, skipping'); return; }
+  console.log('[seed] seeding PIN users…');
   const [h1, h2, h3] = await Promise.all([sha256('2020'), sha256('2026'), sha256('2007')]);
-  await db.ref('users').set({
+  await db.ref('users').update({
     josette: { name:'Josette', role:'admin',   site:'A',    pinHash: h1 },
     jubina:  { name:'Jubina',  role:'entry',   site:'B',    pinHash: h2 },
     manager: { name:'Manager', role:'manager', site:null,   pinHash: h3 }
   });
-  console.log('[seed] users seeded');
+  console.log('[seed] done — josette hash:', h1);
 }
 seedUsers();
 
@@ -772,11 +774,15 @@ async function pinEnter() {
   if (!username) { showLoginErr('Select your name first.'); pinReset(); return; }
   if (pinBuffer.length < 4) { showLoginErr('Enter all 4 digits.'); return; }
   const hash = await sha256(pinBuffer);
+  console.log('[pin] user:', username, '| entered hash:', hash);
   pinBuffer = ''; updatePinDots();
   try {
     const snap = await db.ref('users/' + username).once('value');
     const ur   = snap.val();
-    if (!ur || ur.pinHash !== hash) { showLoginErr('Wrong PIN, try again.'); return; }
+    console.log('[pin] stored record:', ur);
+    console.log('[pin] stored hash:', ur?.pinHash, '| match:', ur?.pinHash === hash);
+    if (!ur)              { showLoginErr('User record not found — seeding may still be in progress.'); return; }
+    if (ur.pinHash !== hash) { showLoginErr('Wrong PIN, try again.'); return; }
     bootApp(username, ur);
   } catch (e) {
     console.error('[login]', e);
