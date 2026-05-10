@@ -1,1527 +1,1690 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Royal Eng — Petty Cash</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
 <style>
-/* ── RESET & ROOT ─────────────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --hdr:#612D62; --purple:#3B038A; --purple-d:#2A0263; --purple-l:#EDE8F8; --purple-f:#F7F4FD;
+  --sb:#612D62; --sb-w:220px;
   --gold:#C9A000; --gold-d:#A17800; --gold-l:#FEF3C7;
-  --white:#fff; --bg:#F0EDF8; --border:#CCC4E8; --border2:#DDD6F0;
-  --text:#1A0A3D; --muted:#7060A0;
+  --pur:#3B038A; --pur-d:#2A0263; --pur-l:#EDE8F8;
+  --bg:#F0F2F7; --white:#fff; --text:#1E2035; --muted:#64748B;
+  --border:#E2E8F0; --border2:#EEF2F7;
   --green:#166534; --green-bg:#DCFCE7;
   --red:#991B1B; --red-bg:#FEE2E2;
-  --orange:#854D0E; --orange-bg:#FEF9C3;
-  --blue:#1e40af; --blue-bg:#DBEAFE;
-  --radius:12px; --radius-sm:8px;
-  --shadow:0 2px 12px rgba(59,3,138,0.08);
+  --amber:#92400E; --amber-bg:#FEF3C7;
+  --blue:#1E40AF; --blue-bg:#DBEAFE;
+  --r:10px; --sh:0 1px 8px rgba(0,0,0,.07);
 }
-html,body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;}
-[lang="ar"] body,[dir="rtl"]{font-family:'Noto Sans Arabic','Barlow',sans-serif;}
+html,body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);height:100%;overflow:hidden;}
 
-/* ── HEADER ───────────────────────────────────────────────────── */
-.hdr{background:var(--hdr);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:100;}
-.logo{display:flex;align-items:center;gap:10px;}
-.logo-box{width:38px;height:38px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--hdr);flex-shrink:0;}
-.logo-name{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;color:#fff;letter-spacing:0.08em;}
-.logo-sub{font-size:10px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;}
-.hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
-.hdr-pcno{font-size:13px;font-weight:700;color:var(--gold);}
-.hdr-meta{font-size:11px;color:rgba(255,255,255,0.5);}
-.hdr-user{font-size:11px;color:rgba(255,255,255,0.75);display:none;}
-.hdr-actions{display:flex;align-items:center;gap:8px;}
-.lang-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:3px 10px;font-size:11px;color:rgba(255,255,255,0.7);cursor:pointer;font-family:'Barlow',sans-serif;}
-.lang-btn:hover{background:rgba(255,255,255,0.2);color:#fff;}
-.signout-btn{background:none;border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:3px 10px;font-size:11px;color:rgba(255,255,255,0.5);cursor:pointer;font-family:'Barlow',sans-serif;display:none;}
-.signout-btn:hover{color:var(--gold);border-color:var(--gold);}
+/* ── LOGIN ─────────────────────────────────────────────────────── */
+#login-screen{
+  position:fixed;inset:0;background:var(--sb);
+  display:flex;align-items:center;justify-content:center;z-index:9000;
+}
+.login-card{
+  background:var(--white);border-radius:16px;padding:36px 32px;
+  width:360px;max-width:calc(100vw - 32px);box-shadow:0 12px 48px rgba(0,0,0,.25);
+}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
+.login-logo-box{
+  width:44px;height:44px;background:var(--gold);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--sb);
+}
+.login-logo-name{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:var(--sb);letter-spacing:.05em;}
+.login-logo-sub{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;}
+.lf{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.lf label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);}
+.lf input{height:44px;border:1.5px solid var(--border);border-radius:8px;padding:0 14px;font-size:15px;font-family:'Barlow',sans-serif;color:var(--text);outline:none;}
+.lf input:focus{border-color:var(--pur);box-shadow:0 0 0 3px rgba(59,3,138,.07);}
+.login-err{font-size:13px;color:var(--red);min-height:20px;margin-bottom:8px;font-weight:600;}
 
-/* ── PAGES ────────────────────────────────────────────────────── */
-.page{display:none;padding:20px 16px 60px;max-width:520px;margin:0 auto;}
-.page.on{display:block;}
+/* ── SIDEBAR ───────────────────────────────────────────────────── */
+.sidebar{
+  position:fixed;top:0;left:0;width:var(--sb-w);height:100vh;
+  background:var(--sb);display:flex;flex-direction:column;z-index:200;
+}
+.sb-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0;}
+.sb-logo-box{width:36px;height:36px;background:var(--gold);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--sb);margin-bottom:8px;}
+.sb-logo-name{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#fff;letter-spacing:.06em;line-height:1;}
+.sb-logo-sub{font-size:10px;color:var(--gold);letter-spacing:.12em;text-transform:uppercase;margin-top:2px;}
+.sb-nav{flex:1;padding:10px 0;overflow-y:auto;}
+.nav-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);padding:14px 16px 4px;}
+.nav-item{
+  display:flex;align-items:center;gap:9px;padding:10px 16px;
+  font-size:13px;font-weight:600;color:rgba(255,255,255,.55);
+  cursor:pointer;transition:all .15s;border-left:3px solid transparent;user-select:none;
+}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,.07);}
+.nav-item.active{color:#fff;background:rgba(255,255,255,.11);border-left-color:var(--gold);}
+.nav-item .ni{font-size:14px;width:18px;text-align:center;flex-shrink:0;}
+.nav-divider{height:1px;background:rgba(255,255,255,.1);margin:8px 16px;}
+.sb-footer{padding:10px 16px;border-top:1px solid rgba(255,255,255,.1);flex-shrink:0;}
+.conn-row{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.3);}
+.cdot{width:7px;height:7px;border-radius:50%;background:#ef4444;transition:background .3s;}
+.cdot.on{background:#22c55e;}
 
-/* ── TYPOGRAPHY ───────────────────────────────────────────────── */
-.page-title{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;color:var(--purple);margin-bottom:4px;}
-.page-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
-.sec{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:var(--purple);margin:22px 0 10px;display:flex;align-items:center;gap:6px;}
-.sec::before{content:'';display:block;width:3px;height:14px;background:var(--gold);border-radius:2px;flex-shrink:0;}
-[dir="rtl"] .sec::before{order:2;}
+/* ── MAIN ──────────────────────────────────────────────────────── */
+.main{margin-left:var(--sb-w);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
-/* ── CARDS ────────────────────────────────────────────────────── */
-.card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
+/* TOPBAR */
+.topbar{
+  background:var(--white);border-bottom:1px solid var(--border);
+  padding:0 24px;height:52px;display:flex;align-items:center;
+  justify-content:space-between;flex-shrink:0;box-shadow:var(--sh);z-index:100;
+}
+.tb-left{display:flex;align-items:center;gap:12px;}
+.tb-title{font-family:'Barlow Condensed',sans-serif;font-size:21px;font-weight:700;color:var(--text);letter-spacing:.02em;}
+.period-pill{
+  padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;
+  background:var(--pur-l);color:var(--pur);
+}
+.period-pill.active{background:var(--green-bg);color:var(--green);}
+.period-pill.draft{background:var(--blue-bg);color:var(--blue);}
+.period-pill.closed{background:var(--border);color:var(--muted);}
+.tb-right{display:flex;align-items:center;gap:10px;font-size:13px;}
+.tb-user{font-weight:700;color:var(--text);}
+.role-badge{
+  padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;
+}
+.role-badge.admin{background:var(--sb);color:#fff;}
+.role-badge.entry{background:var(--pur-l);color:var(--pur);}
+.role-badge.manager{background:var(--gold-l);color:var(--gold-d);}
 
-/* ── FIELDS ───────────────────────────────────────────────────── */
-.f{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
-.f:last-child{margin-bottom:0;}
-.f label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);}
-.f input,.f select,.f textarea{height:44px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:0 12px;font-size:15px;font-family:'Barlow','Noto Sans Arabic',sans-serif;color:var(--text);background:var(--white);outline:none;width:100%;}
-.f input:focus,.f select:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(59,3,138,0.08);}
-.f input.ro{background:var(--bg);color:var(--muted);cursor:not-allowed;}
-.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+/* BALANCE STRIP */
+.balance-strip{
+  background:var(--pur);padding:10px 24px;
+  display:flex;align-items:center;gap:0;flex-shrink:0;
+}
+.bs-item{flex:1;text-align:center;border-right:1px solid rgba(255,255,255,.15);padding:0 8px;}
+.bs-item:last-child{border-right:none;}
+.bs-label{font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;}
+.bs-val{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:#fff;}
+.bs-val.gold{color:#FFD84D;}
+.bs-val.red{color:#FCA5A5;}
+.bs-val.green{color:#86EFAC;}
 
-/* ── LOCKED AMOUNT ────────────────────────────────────────────── */
-.locked-box{background:var(--purple-f);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;}
-.locked-val{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:700;color:var(--purple);}
-.locked-info{font-size:11px;color:var(--muted);margin-top:2px;}
-.lock-icon{font-size:22px;opacity:0.35;}
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:24px;}
 
-/* ── PERSON LIST ──────────────────────────────────────────────── */
-.person-btn{display:flex;align-items:center;gap:14px;padding:16px;background:var(--white);border:2px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all 0.15s;width:100%;text-align:left;margin-bottom:10px;box-shadow:var(--shadow);}
-.person-btn:hover{border-color:var(--purple);background:var(--purple-f);}
-[dir="rtl"] .person-btn{text-align:right;}
-.avatar{width:46px;height:46px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;flex-shrink:0;}
-.avatar.adm{background:var(--hdr);}
-.p-name{font-weight:700;font-size:15px;color:var(--text);}
-.p-role{font-size:12px;color:var(--muted);margin-top:2px;}
-.p-status{font-size:11px;font-weight:700;margin-top:3px;}
+/* ── VIEWS ─────────────────────────────────────────────────────── */
+.view{display:none;}.view.active{display:block;}
 
-/* ── PIN ──────────────────────────────────────────────────────── */
-.pin-card{background:var(--white);border-radius:var(--radius);border:2px solid var(--border);padding:28px 20px;text-align:center;box-shadow:var(--shadow);}
-.pin-who{font-size:13px;color:var(--muted);margin-bottom:4px;}
-.pin-name{font-size:22px;font-weight:700;color:var(--purple);margin-bottom:28px;}
-.pin-dots{display:flex;justify-content:center;gap:14px;margin-bottom:32px;}
-.dot{width:20px;height:20px;border-radius:50%;border:2.5px solid var(--border);background:transparent;transition:all 0.15s;}
-.dot.on{background:var(--purple);border-color:var(--purple);}
-.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:270px;margin:0 auto 20px;}
-.nb{height:68px;border:2px solid var(--border);border-radius:12px;background:var(--white);font-size:28px;font-weight:700;color:var(--text);cursor:pointer;font-family:'Barlow',sans-serif;transition:all 0.12s;user-select:none;}
-.nb:hover{background:var(--purple);color:#fff;border-color:var(--purple);}
-.nb:active{transform:scale(0.93);}
-.nb.clr{font-size:13px;font-weight:700;color:var(--muted);}
-.nb.go{background:var(--gold);border-color:var(--gold);color:#fff;font-size:15px;font-weight:700;}
-.nb.go:hover{background:var(--purple);border-color:var(--purple);}
-.pin-err{font-size:14px;color:var(--red);min-height:24px;font-weight:600;margin-top:4px;}
-.pin-locked{font-size:13px;color:var(--red);background:var(--red-bg);border-radius:8px;padding:10px 14px;margin-top:10px;display:none;}
-.back-link{display:inline-block;margin-top:16px;font-size:13px;color:var(--muted);cursor:pointer;background:none;border:none;font-family:'Barlow',sans-serif;}
-.back-link:hover{color:var(--purple);}
+/* ── CARD ──────────────────────────────────────────────────────── */
+.card{background:var(--white);border:.5px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);}
+.card-hdr{padding:14px 20px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.card-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:var(--text);letter-spacing:.02em;}
 
-/* ── STATUS BAR ───────────────────────────────────────────────── */
-.status-bar{border-radius:10px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;}
-.status-bar.draft{background:var(--blue-bg);color:var(--blue);}
-.status-bar.active{background:var(--green-bg);color:var(--green);}
-.status-bar.submitted{background:var(--orange-bg);color:var(--orange);}
-.status-bar.rejected{background:var(--red-bg);color:var(--red);}
-.status-bar.approved{background:var(--green-bg);color:var(--green);}
-.status-bar.closed{background:var(--purple-l);color:var(--purple);}
+/* ── STAT GRID ─────────────────────────────────────────────────── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.stat-card{background:var(--white);border:.5px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);}
+.stat-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px;}
+.stat-val{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;color:var(--text);line-height:1;}
+.stat-val.gold{color:var(--gold-d);} .stat-val.pur{color:var(--pur);} .stat-val.grn{color:var(--green);} .stat-val.red{color:var(--red);}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:4px;}
 
-/* ── EXPENSE CARDS ────────────────────────────────────────────── */
-.exp-card{background:var(--white);border:2px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
-.exp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.exp-badge{background:var(--purple);color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;}
-.exp-title{font-size:14px;font-weight:700;color:var(--purple);margin-left:10px;flex:1;}
-[dir="rtl"] .exp-title{margin-left:0;margin-right:10px;}
-.exp-del{background:none;border:2px solid var(--border);border-radius:8px;width:36px;height:36px;font-size:20px;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0;}
-.exp-del:hover{background:var(--red-bg);border-color:var(--red);color:var(--red);}
-.ef{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
-.ef:last-child{margin-bottom:0;}
-.ef label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);}
-.ef input,.ef select{height:44px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:0 12px;font-size:15px;font-family:'Barlow','Noto Sans Arabic',sans-serif;color:var(--text);background:var(--white);outline:none;width:100%;}
-.ef input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(59,3,138,0.08);}
-.ef input.big{font-size:24px;font-weight:700;color:var(--purple);height:54px;}
-.ef2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.ef input.ro{background:var(--bg);color:var(--muted);}
-.opt-toggle{background:none;border:1.5px dashed var(--border);border-radius:var(--radius-sm);width:100%;padding:10px;font-size:13px;color:var(--muted);cursor:pointer;font-family:'Barlow',sans-serif;margin:8px 0 4px;transition:all 0.15s;text-align:left;}
-.opt-toggle:hover{border-color:var(--purple);color:var(--purple);}
-[dir="rtl"] .opt-toggle{text-align:right;}
-.opt-sec{display:none;}
-.opt-sec.open{display:block;}
+/* ── FILTERS ───────────────────────────────────────────────────── */
+.filter-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.fi,.fs{height:34px;border:1.5px solid var(--border);border-radius:7px;padding:0 10px;font-size:13px;font-family:'Barlow',sans-serif;color:var(--text);background:var(--white);outline:none;}
+.fi:focus,.fs:focus{border-color:var(--pur);}
+.fi{width:190px;} .fs{min-width:130px;}
 
-/* ── ADD EXPENSE ──────────────────────────────────────────────── */
-.add-exp-btn{width:100%;padding:18px;border:3px dashed var(--purple);border-radius:var(--radius);background:rgba(59,3,138,0.04);font-size:17px;font-weight:700;color:var(--purple);cursor:pointer;font-family:'Barlow',sans-serif;margin-bottom:20px;transition:all 0.15s;letter-spacing:0.02em;}
-.add-exp-btn:hover{background:rgba(59,3,138,0.1);border-color:var(--gold);color:var(--gold-d);}
-.add-exp-btn:disabled{opacity:0.4;cursor:not-allowed;}
+/* ── TABLE ─────────────────────────────────────────────────────── */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);background:#FAFBFC;border-bottom:.5px solid var(--border);white-space:nowrap;}
+tbody tr{border-bottom:.5px solid var(--border2);transition:background .1s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:#FAFBFF;}
+tbody td{padding:12px 14px;vertical-align:middle;}
+.td-bold{font-weight:700;color:var(--text);}
+.td-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.td-amt{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--pur);white-space:nowrap;}
+.td-muted{color:var(--muted);}
+.row-acts{display:flex;gap:5px;justify-content:flex-end;}
 
-/* ── TOTALS ───────────────────────────────────────────────────── */
-.totals{background:var(--purple);border-radius:var(--radius);padding:20px 16px;margin-bottom:20px;}
-.t-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.t-lbl{font-size:10px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px;}
-.t-val{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;color:#fff;}
-.t-val.gold{color:#FFD84D;}
-.t-val.grn{color:#86EFAC;}
-.t-val.red{color:#FCA5A5;}
-
-/* ── BUTTONS ──────────────────────────────────────────────────── */
-.btn{width:100%;padding:17px;border-radius:var(--radius);font-size:16px;font-weight:700;font-family:'Barlow',sans-serif;cursor:pointer;border:none;letter-spacing:0.03em;transition:all 0.15s;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px;}
-.btn.gold{background:var(--gold);color:#fff;}
-.btn.gold:hover{background:var(--gold-d);}
-.btn.purple{background:var(--purple);color:#fff;}
-.btn.purple:hover{background:var(--purple-d);}
-.btn.outline{background:transparent;border:2px solid var(--border);color:var(--muted);}
-.btn.outline:hover{border-color:var(--purple);color:var(--purple);}
-.btn.green{background:var(--green);color:#fff;}
-.btn.red-btn{background:var(--red);color:#fff;}
-.btn.wa{background:#25D366;color:#fff;}
-.btn.wa:hover{background:#1da851;}
-.btn:disabled{opacity:0.45;cursor:not-allowed;}
-.btn-row{display:flex;gap:8px;}
-.btn-row .btn{margin-bottom:0;}
-
-/* ── ADMIN TABS ───────────────────────────────────────────────── */
-.atabs{display:flex;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px;background:var(--white);}
-.atab{flex:1;padding:12px 6px;background:transparent;border:none;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;font-family:'Barlow',sans-serif;transition:all 0.15s;letter-spacing:0.03em;}
-.atab.on{background:var(--purple);color:#fff;}
-.atab:not(.on):hover{background:var(--purple-f);}
-
-/* ── MONTH SELECTOR ───────────────────────────────────────────── */
-.month-card{background:var(--white);border:2px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:space-between;}
-.month-card:hover{border-color:var(--purple);background:var(--purple-f);}
-.month-card.active-month{border-color:var(--gold);background:var(--gold-l);}
-.mc-left .mc-name{font-weight:700;font-size:15px;color:var(--text);}
-.mc-left .mc-date{font-size:12px;color:var(--muted);margin-top:2px;}
-.mc-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
-
-/* ── PILLS ────────────────────────────────────────────────────── */
-.pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap;}
+/* ── PILLS / BADGES ────────────────────────────────────────────── */
+.pill{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap;}
 .pill.draft{background:var(--blue-bg);color:var(--blue);}
-.pill.active{background:var(--green-bg);color:var(--green);}
-.pill.submitted{background:var(--orange-bg);color:var(--orange);}
-.pill.rejected{background:var(--red-bg);color:var(--red);}
-.pill.approved{background:var(--green-bg);color:var(--green);}
-.pill.closed{background:var(--purple-l);color:var(--purple);}
-.pill.pending{background:var(--orange-bg);color:var(--orange);}
-.pill.ok{background:var(--green-bg);color:var(--green);}
+.pill.submitted{background:var(--green-bg);color:var(--green);}
+.pill.open{background:var(--amber-bg);color:var(--amber);}
+.pill.settled{background:var(--green-bg);color:var(--green);}
+.pill.overspent{background:var(--red-bg);color:var(--red);}
+.pill.active-p{background:var(--green-bg);color:var(--green);}
+.pill.closed-p{background:var(--border);color:var(--muted);}
+.comment-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;background:var(--pur-l);color:var(--pur);}
 
-/* ── SETUP HOLDERS ────────────────────────────────────────────── */
-.sh{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;}
-.sh-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.sh-num{background:var(--purple);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;}
-.sh-title{font-weight:700;font-size:14px;color:var(--text);margin-left:10px;flex:1;}
-[dir="rtl"] .sh-title{margin-left:0;margin-right:10px;}
-.sh-del{background:none;border:none;font-size:20px;color:var(--border);cursor:pointer;line-height:1;}
-.sh-del:hover{color:var(--red);}
-.sh-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.sh-f{display:flex;flex-direction:column;gap:4px;}
-.sh-f label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);}
-.sh-f input{height:40px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:0 10px;font-size:14px;font-family:'Barlow',sans-serif;color:var(--text);background:var(--white);outline:none;}
-.sh-f input:focus{border-color:var(--purple);}
-.sh-f input[type=password]{letter-spacing:0.25em;font-size:18px;}
-.add-holder-btn{width:100%;padding:14px;border:2px dashed var(--border);border-radius:var(--radius);background:transparent;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Barlow',sans-serif;margin-bottom:16px;transition:all 0.15s;}
-.add-holder-btn:hover{border-color:var(--purple);color:var(--purple);}
+/* ── ICON BUTTONS ──────────────────────────────────────────────── */
+.ib{width:30px;height:30px;border:1.5px solid var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;}
+.ib:hover{border-color:var(--pur);color:var(--pur);background:var(--pur-l);}
+.ib.del:hover{border-color:var(--red);color:var(--red);background:var(--red-bg);}
+.ib:disabled{opacity:.35;cursor:not-allowed;}
 
-/* ── SUMMARY CARDS ────────────────────────────────────────────── */
-.summ-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;box-shadow:var(--shadow);}
-.summ-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
-.summ-name{font-weight:700;font-size:15px;color:var(--text);}
-.summ-amt{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:var(--purple);}
-.summ-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
-.sg-lbl{font-size:11px;color:var(--muted);}
-.sg-val{font-size:13px;font-weight:700;color:var(--text);margin-top:2px;}
-.exp-detail{margin-top:10px;padding-top:10px;border-top:1px solid var(--border2);}
-.exp-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border2);font-size:12px;}
-.exp-row:last-child{border-bottom:none;}
-.exp-row-desc{color:var(--text);flex:1;}
-.exp-row-proj{font-size:11px;color:var(--muted);margin-top:1px;}
-.exp-row-amt{font-weight:700;color:var(--purple);margin-left:10px;white-space:nowrap;}
-[dir="rtl"] .exp-row-amt{margin-left:0;margin-right:10px;}
+/* ── BUTTONS ───────────────────────────────────────────────────── */
+.btn{padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;font-family:'Barlow',sans-serif;cursor:pointer;border:none;transition:all .15s;letter-spacing:.02em;display:inline-flex;align-items:center;gap:6px;}
+.btn.gold{background:var(--gold);color:var(--sb);}
+.btn.gold:hover{background:var(--gold-d);}
+.btn.pur{background:var(--pur);color:#fff;}
+.btn.pur:hover{background:var(--pur-d);}
+.btn.grn{background:var(--green);color:#fff;}
+.btn.out{background:transparent;border:1.5px solid var(--border);color:var(--muted);}
+.btn.out:hover{border-color:var(--pur);color:var(--pur);}
+.btn.danger{background:var(--red-bg);color:var(--red);border:1.5px solid var(--red-bg);}
+.btn.danger:hover{background:var(--red);color:#fff;}
+.btn.sm{padding:7px 13px;font-size:12px;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn-row{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;}
 
-/* ── GRAND TOTAL ──────────────────────────────────────────────── */
-.grand-total{background:var(--purple);border-radius:var(--radius);padding:18px 16px;margin-bottom:16px;}
-.gt-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.gt-lbl{font-size:10px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:3px;}
-.gt-val{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;color:#fff;}
-.gt-val.gold{color:#FFD84D;}
-.gt-val.grn{color:#86EFAC;}
-.gt-val.red{color:#FCA5A5;}
+/* ── FORM FIELDS ───────────────────────────────────────────────── */
+.f{display:flex;flex-direction:column;gap:4px;margin-bottom:13px;}
+.f:last-child{margin-bottom:0;}
+.f label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);}
+.f input,.f select,.f textarea{height:40px;border:1.5px solid var(--border);border-radius:7px;padding:0 11px;font-size:14px;font-family:'Barlow',sans-serif;color:var(--text);background:var(--white);outline:none;width:100%;transition:border-color .15s;}
+.f textarea{height:68px;padding:9px 11px;resize:vertical;}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--pur);box-shadow:0 0 0 3px rgba(59,3,138,.06);}
+.f input.ro{background:var(--bg);color:var(--muted);cursor:not-allowed;}
+.f input.big{font-size:20px;font-weight:700;color:var(--pur);height:48px;}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
 
-/* ── APPROVE ──────────────────────────────────────────────────── */
-.ap-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;box-shadow:var(--shadow);}
-.ap-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
-.ap-name{font-weight:700;font-size:15px;color:var(--text);}
-.ap-role{font-size:12px;color:var(--muted);margin-bottom:12px;}
-.ap-comment{width:100%;height:40px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:0 12px;font-size:13px;font-family:'Barlow',sans-serif;color:var(--text);outline:none;margin-bottom:10px;}
-.ap-comment:focus{border-color:var(--purple);}
-.ap-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.ap-btn{padding:13px;border-radius:var(--radius-sm);font-size:14px;font-weight:700;font-family:'Barlow',sans-serif;cursor:pointer;border:2px solid transparent;transition:all 0.15s;}
-.ap-btn.app{background:var(--green-bg);color:var(--green);border-color:var(--green-bg);}
-.ap-btn.app.sel{background:var(--green);color:#fff;}
-.ap-btn.rej{background:var(--red-bg);color:var(--red);border-color:var(--red-bg);}
-.ap-btn.rej.sel{background:var(--red);color:#fff;}
-.ap-ts{font-size:11px;color:var(--muted);margin-top:6px;}
+/* ── INVOICE FORM ──────────────────────────────────────────────── */
+.inv-section{background:var(--white);border:.5px solid var(--border);border-radius:var(--r);padding:20px 22px;margin-bottom:16px;box-shadow:var(--sh);}
+.inv-sec-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:.5px solid var(--border);}
+.yellow-banner{background:#FEF9C3;border:1px solid #FDE68A;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;font-weight:600;color:#92400E;display:flex;align-items:center;gap:8px;}
 
-/* ── HOLDER APPROVE ───────────────────────────────────────────── */
-.hap-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;}
-.hap-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.hap-name{font-weight:700;font-size:14px;}
-.hap-comment-input{width:100%;height:38px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:0 12px;font-size:13px;font-family:'Barlow',sans-serif;color:var(--text);outline:none;margin-bottom:8px;}
-.hap-comment-input:focus{border-color:var(--purple);}
-.hap-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.hap-btn{padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:700;font-family:'Barlow',sans-serif;cursor:pointer;border:2px solid transparent;transition:all 0.15s;}
-.hap-btn.app{background:var(--green-bg);color:var(--green);}
-.hap-btn.app.sel{background:var(--green);color:#fff;}
-.hap-btn.rej{background:var(--red-bg);color:var(--red);}
-.hap-btn.rej.sel{background:var(--red);color:#fff;}
+/* LINE ITEMS */
+.li-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px;}
+.li-table th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding:6px 8px;background:var(--bg);border-bottom:.5px solid var(--border);}
+.li-table td{padding:6px 8px;border-bottom:.5px solid var(--border2);}
+.li-table td input{height:36px;border:1.5px solid var(--border);border-radius:6px;padding:0 9px;font-size:13px;font-family:'Barlow',sans-serif;color:var(--text);background:var(--white);outline:none;width:100%;}
+.li-table td input:focus{border-color:var(--pur);}
+.li-table td input.ro{background:var(--bg);color:var(--pur);font-weight:700;}
+.li-grand{text-align:right;font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:var(--pur);padding:10px 8px 0;}
 
-/* ── AUDIT LOG ────────────────────────────────────────────────── */
-.audit-row{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border2);font-size:12px;}
+/* ── ADVANCE CARDS ─────────────────────────────────────────────── */
+.adv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.adv-card{background:var(--white);border:.5px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);}
+.adv-card.open{border-left:3px solid var(--amber);}
+.adv-card.settled{border-left:3px solid var(--green);}
+.adv-card.overspent{border-left:3px solid var(--red);}
+.adv-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.adv-avatar{width:40px;height:40px;border-radius:50%;background:var(--pur);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0;}
+.adv-info{flex:1;margin-left:10px;}
+.adv-name{font-weight:700;font-size:14px;}
+.adv-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.adv-nums{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.adv-num{background:var(--bg);border-radius:7px;padding:8px 10px;}
+.adv-num-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;}
+.adv-num-val{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--text);}
+.adv-num-val.red{color:var(--red);}
+.adv-num-val.grn{color:var(--green);}
+.adv-acts{display:flex;gap:6px;flex-wrap:wrap;}
+
+/* ── MODAL ─────────────────────────────────────────────────────── */
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+.backdrop.open{opacity:1;pointer-events:auto;}
+.modal{background:var(--white);border-radius:14px;width:620px;max-width:calc(100vw - 32px);max-height:calc(100vh - 48px);overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.18);transform:translateY(12px);transition:transform .2s;}
+.backdrop.open .modal{transform:translateY(0);}
+.modal.sm{width:420px;}
+.modal.lg{width:800px;}
+.modal-hdr{padding:18px 22px 14px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;color:var(--text);}
+.modal-close{width:30px;height:30px;border:none;background:var(--bg);border-radius:7px;font-size:16px;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{color:var(--text);}
+.modal-body{padding:18px 22px 22px;}
+
+/* ── AUDIT / COMMENT ───────────────────────────────────────────── */
+.audit-row{display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border2);font-size:12px;}
 .audit-row:last-child{border-bottom:none;}
-.audit-ts{color:var(--muted);white-space:nowrap;flex-shrink:0;width:130px;}
-.audit-user{font-weight:600;color:var(--purple);flex-shrink:0;width:90px;}
-.audit-action{color:var(--text);}
+.a-ts{color:var(--muted);white-space:nowrap;flex-shrink:0;font-size:11px;}
+.a-user{font-weight:700;color:var(--pur);white-space:nowrap;min-width:80px;}
+.a-action{color:var(--text);flex:1;}
+.comment-card{background:var(--pur-l);border-radius:8px;padding:10px 13px;margin-bottom:8px;}
+.cmt-meta{font-size:11px;color:var(--pur);font-weight:700;margin-bottom:4px;}
+.cmt-text{font-size:13px;color:var(--text);}
 
-/* ── YTD ──────────────────────────────────────────────────────── */
-.ytd-card{background:var(--purple);border-radius:var(--radius);padding:16px;margin-bottom:12px;}
-.ytd-title{font-size:11px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px;}
-.ytd-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
-.ytd-lbl{font-size:10px;color:rgba(255,255,255,0.5);margin-bottom:3px;}
-.ytd-val{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:#fff;}
-.ytd-val.gold{color:#FFD84D;}
-.ytd-month-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border2);font-size:13px;}
-.ytd-month-row:last-child{border-bottom:none;}
+/* ── REPORTS ───────────────────────────────────────────────────── */
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:13px;}
+.bar-label{width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;}
+.bar-track{flex:1;height:16px;background:var(--border);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;background:var(--pur);border-radius:4px;transition:width .4s;}
+.bar-fill.red{background:var(--red);}
+.bar-amt{width:80px;text-align:right;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--pur);}
 
-/* ── LOADING ──────────────────────────────────────────────────── */
-.loading{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
-.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--purple);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+/* ── PERSON/USER ITEM ──────────────────────────────────────────── */
+.person-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);border-radius:8px;margin-bottom:6px;}
+.pi-left{display:flex;align-items:center;gap:10px;}
+.pi-avatar{width:34px;height:34px;border-radius:50%;background:var(--pur);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;flex-shrink:0;}
+.pi-name{font-weight:700;font-size:13px;}
+.pi-meta{font-size:11px;color:var(--muted);}
+
+/* ── MISC ──────────────────────────────────────────────────────── */
+.loading{text-align:center;padding:40px;color:var(--muted);}
+.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--pur);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px;}
 @keyframes spin{to{transform:rotate(360deg);}}
-
-/* ── TOAST ────────────────────────────────────────────────────── */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:9999;transition:transform 0.3s;white-space:nowrap;max-width:90vw;}
+.empty-state{text-align:center;padding:44px 20px;color:var(--muted);}
+.empty-icon{font-size:32px;margin-bottom:8px;}
+.empty-text{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.empty-sub{font-size:12px;}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--text);color:#fff;padding:11px 20px;border-radius:9px;font-size:13px;font-weight:600;z-index:9999;transition:transform .25s;white-space:nowrap;pointer-events:none;}
 .toast.show{transform:translateX(-50%) translateY(0);}
-.toast.ok{background:var(--green);}
-.toast.err{background:var(--red);}
+.toast.ok{background:var(--green);} .toast.err{background:var(--red);}
+.offline-banner{background:#FEE2E2;color:#991B1B;font-size:12px;font-weight:600;text-align:center;padding:6px;display:none;flex-shrink:0;}
+.divider{height:.5px;background:var(--border);margin:14px 0;}
+.sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px;margin-top:16px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 
-/* ── DIVIDER ──────────────────────────────────────────────────── */
-.divider{height:1px;background:var(--border2);margin:16px 0;}
-
-/* ── PRINT STYLES ─────────────────────────────────────────────── */
-@media print{
-  .hdr,.nav,.btn,.atabs,.add-exp-btn,.opt-toggle,.no-print{display:none!important;}
-  .page{display:block!important;padding:0;max-width:100%;}
-  body{background:#fff;}
-  .print-form{display:block!important;}
+@media(max-width:1000px){
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .report-grid,.two-col{grid-template-columns:1fr;}
 }
-.print-form{display:none;}
-
-/* ── RTL ADJUSTMENTS ──────────────────────────────────────────── */
-[dir="rtl"] .person-btn,[dir="rtl"] .f,[dir="rtl"] .ef,[dir="rtl"] .sh-f{text-align:right;}
-[dir="rtl"] .sec::before{order:1;}
+@media print{.sidebar,.topbar,.balance-strip,.btn,.row-acts,.filter-bar{display:none!important;}.main{margin-left:0;}html,body{overflow:auto;}}
 </style>
 </head>
 <body>
 
-<!-- OFFLINE BANNER -->
-<div class="offline-banner" id="offline-banner" style="display:none;background:#FEE2E2;color:#991B1B;font-size:12px;font-weight:600;text-align:center;padding:7px 16px;border-bottom:1px solid #fca5a5;">
-  ⚠ No internet connection — changes will sync when reconnected
-</div>
+<!-- ── TOAST ──────────────────────────────────────────────────── -->
+<div class="toast" id="toast"></div>
 
-<!-- TOAST -->
-<div class="toast" id="toast" role="alert" aria-live="assertive"></div>
-
-<!-- HEADER -->
-<div class="hdr">
-  <div class="logo">
-    <div class="logo-box">RE</div>
-    <div>
-      <div class="logo-name">Royal Eng</div>
-      <div class="logo-sub" id="hdr-sub" data-en="Petty Cash" data-ar="الصندوق الصغير">Petty Cash</div>
+<!-- ── LOGIN SCREEN ───────────────────────────────────────────── -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-box">RE</div>
+      <div>
+        <div class="login-logo-name">Royal Eng</div>
+        <div class="login-logo-sub">Petty Cash</div>
+      </div>
     </div>
-  </div>
-  <div class="hdr-right">
-    <div class="hdr-actions">
-      <div id="conn-dot" style="width:7px;height:7px;border-radius:50%;background:#ef4444;transition:background .3s;flex-shrink:0;" title="Checking..."></div>
-      <style>#conn-dot.online{background:#22c55e;}</style>
-      <button class="lang-btn" onclick="toggleLang()" id="lang-btn">عربي</button>
-      <button class="signout-btn" id="signout-btn" onclick="signOut()">↩ <span data-en="Sign out" data-ar="خروج">Sign out</span></button>
-    </div>
-    <div class="hdr-pcno" id="hdr-pcno">—</div>
-    <div class="hdr-meta" id="hdr-meta">—</div>
-    <div class="hdr-user" id="hdr-user"></div>
+    <div class="lf"><label>Email</label><input type="email" id="l-email" placeholder="admin@royaleng-me.com" autocomplete="username"></div>
+    <div class="lf"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password"></div>
+    <div class="login-err" id="l-err"></div>
+    <button class="btn gold" style="width:100%;justify-content:center;padding:13px;" id="l-btn" onclick="doLogin()">Sign In →</button>
   </div>
 </div>
 
-<!-- PAGE: WHO -->
-<div class="page on" id="pg-who">
-  <div class="page-title" data-en="Who are you?" data-ar="من أنت؟">Who are you?</div>
-  <div class="page-sub" data-en="Tap your name to continue" data-ar="اضغط على اسمك للمتابعة">Tap your name to continue</div>
-  <div id="person-list">
-    <div class="loading"><div class="spinner"></div><span data-en="Loading..." data-ar="جاري التحميل...">Loading...</span></div>
+<!-- ── OFFLINE BANNER ─────────────────────────────────────────── -->
+<div class="offline-banner" id="offline-banner">⚠ Offline — changes will sync when reconnected</div>
+
+<!-- ── CONFIRM MODAL ──────────────────────────────────────────── -->
+<div class="backdrop" id="confirm-bd">
+  <div class="modal sm">
+    <div class="modal-hdr"><div class="modal-title" id="cfm-title">Confirm</div><button class="modal-close" onclick="cfmResolve(false)">✕</button></div>
+    <div class="modal-body">
+      <div style="font-size:14px;color:var(--muted);margin-bottom:18px;line-height:1.5;" id="cfm-msg"></div>
+      <div class="btn-row"><button class="btn out" onclick="cfmResolve(false)">Cancel</button><button class="btn danger" id="cfm-ok" onclick="cfmResolve(true)">Confirm</button></div>
+    </div>
   </div>
 </div>
 
-<!-- PAGE: PIN -->
-<div class="page" id="pg-pin">
-  <div class="pin-card">
-    <div class="pin-who" data-en="Enter your PIN for" data-ar="أدخل رمزك لـ">Enter your PIN for</div>
-    <div class="pin-name" id="pin-for">—</div>
-    <div class="pin-dots">
-      <div class="dot" id="dt0"></div><div class="dot" id="dt1"></div>
-      <div class="dot" id="dt2"></div><div class="dot" id="dt3"></div>
-    </div>
-    <div class="numpad">
-      <button class="nb" onclick="np('1')">1</button>
-      <button class="nb" onclick="np('2')">2</button>
-      <button class="nb" onclick="np('3')">3</button>
-      <button class="nb" onclick="np('4')">4</button>
-      <button class="nb" onclick="np('5')">5</button>
-      <button class="nb" onclick="np('6')">6</button>
-      <button class="nb" onclick="np('7')">7</button>
-      <button class="nb" onclick="np('8')">8</button>
-      <button class="nb" onclick="np('9')">9</button>
-      <button class="nb clr" onclick="nc()" data-en="Clear" data-ar="مسح">Clear</button>
-      <button class="nb" onclick="np('0')">0</button>
-      <button class="nb go" onclick="ne()" data-en="Enter ›" data-ar="دخول ›">Enter ›</button>
-    </div>
-    <div class="pin-err" id="pin-err"></div>
-    <div class="pin-locked" id="pin-locked" data-en="Account locked after 3 wrong attempts. Please contact admin." data-ar="تم قفل الحساب بعد 3 محاولات خاطئة. تواصل مع المدير.">Account locked after 3 wrong attempts. Please contact admin.</div>
-    <button class="back-link" onclick="show('pg-who')" data-en="← Back" data-ar="← رجوع">← Back</button>
+<!-- ── INVOICE DETAIL MODAL ───────────────────────────────────── -->
+<div class="backdrop" id="inv-detail-bd">
+  <div class="modal lg">
+    <div class="modal-hdr"><div class="modal-title" id="inv-d-title">Invoice</div><button class="modal-close" onclick="closeBackdrop('inv-detail-bd')">✕</button></div>
+    <div class="modal-body" id="inv-d-body"></div>
   </div>
 </div>
 
-<!-- PAGE: HOLDER FORM -->
-<div class="page" id="pg-form">
-  <div class="status-bar active" id="form-status-bar">
-    <span id="form-status-txt">Fill in your expenses and submit</span>
-  </div>
-  <div class="sec"><span data-en="Your Details" data-ar="بياناتك">Your Details</span></div>
-  <div class="card">
-    <div class="f"><label data-en="Name" data-ar="الاسم">Name</label><input class="ro" type="text" id="f-name" readonly/></div>
-    <div class="f2">
-      <div class="f"><label data-en="Date" data-ar="التاريخ">Date</label><input type="date" id="f-date"/></div>
-      <div class="f"><label data-en="Petty Cash No." data-ar="رقم الصندوق">Petty Cash No.</label><input class="ro" type="text" id="f-pcno" readonly/></div>
+<!-- ── ADVANCE RETURN MODAL ───────────────────────────────────── -->
+<div class="backdrop" id="adv-return-bd">
+  <div class="modal sm">
+    <div class="modal-hdr"><div class="modal-title">Record Cash Return</div><button class="modal-close" onclick="closeBackdrop('adv-return-bd')">✕</button></div>
+    <div class="modal-body">
+      <div class="f"><label>Cash Returned (KWD)</label><input type="number" id="ret-amount" step="0.001" min="0" placeholder="0.000"></div>
+      <div class="f"><label>Notes</label><textarea id="ret-notes" style="height:56px;" placeholder="Optional"></textarea></div>
+      <div class="btn-row"><button class="btn out" onclick="closeBackdrop('adv-return-bd')">Cancel</button><button class="btn gold" onclick="saveReturn()">Save Return</button></div>
     </div>
-    <div class="f" style="margin-bottom:0">
-      <label data-en="Cash Allocated to You (KWD)" data-ar="المبلغ المخصص لك (د.ك)">Cash Allocated to You (KWD)</label>
-      <div class="locked-box">
-        <div><div class="locked-val" id="f-cash-display">—</div><div class="locked-info" data-en="Set by admin · cannot be changed" data-ar="محدد من المدير · لا يمكن تغييره">Set by admin · cannot be changed</div></div>
-        <div class="lock-icon">🔒</div>
-      </div>
-    </div>
-  </div>
-  <div class="sec"><span data-en="Expenses" data-ar="المصروفات">Expenses</span></div>
-  <div id="exp-list"></div>
-  <button class="add-exp-btn" id="add-exp-btn" onclick="addExp()">＋ <span data-en="Add Expense" data-ar="إضافة مصروف">Add Expense</span></button>
-  <div class="totals">
-    <div class="t-grid">
-      <div><div class="t-lbl" data-en="Cash Allocated" data-ar="المبلغ المخصص">Cash Allocated</div><div class="t-val gold" id="tc">—</div></div>
-      <div><div class="t-lbl" data-en="Total Expenses" data-ar="إجمالي المصروفات">Total Expenses</div><div class="t-val" id="te">0.000</div></div>
-      <div><div class="t-lbl" data-en="Remaining" data-ar="المتبقي">Remaining</div><div class="t-val grn" id="tr">—</div></div>
-      <div><div class="t-lbl" data-en="Over Spent" data-ar="الزيادة">Over Spent</div><div class="t-val" id="to">0.000</div></div>
-    </div>
-  </div>
-  <div id="rejection-note" style="display:none;" class="status-bar rejected">
-    <div>
-      <div style="font-weight:700;margin-bottom:2px;" data-en="Form Rejected" data-ar="تم رفض النموذج">Form Rejected</div>
-      <div id="rejection-note-text" style="font-weight:400;font-size:12px;"></div>
-    </div>
-  </div>
-  <button class="btn outline no-print" onclick="signOut()">← <span data-en="Back" data-ar="رجوع">Back</span></button>
-  <button class="btn gold no-print" id="submit-btn" onclick="submitForm()">✓ <span data-en="Submit Form" data-ar="إرسال النموذج">Submit Form</span></button>
-</div>
-
-<!-- PAGE: ADMIN MONTHS -->
-<div class="page" id="pg-months">
-  <div class="page-title" data-en="Petty Cash Months" data-ar="أشهر الصندوق">Petty Cash Months</div>
-  <div class="page-sub" data-en="Select a month or create new" data-ar="اختر شهراً أو أنشئ جديداً">Select a month or create new</div>
-  <button class="btn gold" onclick="createNewMonth()">＋ <span data-en="New Month" data-ar="شهر جديد">New Month</span></button>
-  <div id="months-list"><div class="loading"><div class="spinner"></div></div></div>
-</div>
-
-<!-- PAGE: ADMIN MAIN -->
-<div class="page" id="pg-admin">
-  <div class="atabs">
-    <button class="atab on" id="atab-setup" onclick="switchTab('setup')" data-en="⚙ Setup" data-ar="⚙ الإعداد">⚙ Setup</button>
-    <button class="atab" id="atab-summary" onclick="switchTab('summary')" data-en="📊 Summary" data-ar="📊 الملخص">📊 Summary</button>
-    <button class="atab" id="atab-approve" onclick="switchTab('approve')" data-en="✓ Approve" data-ar="✓ الموافقة">✓ Approve</button>
-    <button class="atab" id="atab-audit" onclick="switchTab('audit')" data-en="📋 Log" data-ar="📋 السجل">📋 Log</button>
-  </div>
-
-  <!-- SETUP -->
-  <div id="tab-setup">
-    <div class="sec"><span data-en="Month Info" data-ar="معلومات الشهر">Month Info</span></div>
-    <div class="card">
-      <div class="f2">
-        <div class="f"><label data-en="Petty Cash No." data-ar="رقم الصندوق">Petty Cash No.</label><input type="text" id="a-pcno" placeholder="e.g. 26"/></div>
-        <div class="f"><label data-en="Month" data-ar="الشهر">Month</label><input type="month" id="a-month"/></div>
-      </div>
-      <div class="f"><label data-en="Month Status" data-ar="حالة الشهر">Month Status</label>
-        <select id="a-status">
-          <option value="draft">Draft</option>
-          <option value="active">Active</option>
-          <option value="closed">Closed</option>
-        </select>
-      </div>
-    </div>
-    <div class="sec"><span data-en="Approvers" data-ar="المعتمدون">Approvers</span></div>
-    <div class="card">
-      <div class="f"><label data-en="Checked by (Approver 1)" data-ar="مراجعة من (معتمد 1)">Checked by (Approver 1)</label><input type="text" id="ap1-name" placeholder="Full name"/></div>
-      <div class="f" style="margin-bottom:0"><label data-en="Approved by (Approver 2)" data-ar="اعتماد من (معتمد 2)">Approved by (Approver 2)</label><input type="text" id="ap2-name" placeholder="Full name"/></div>
-    </div>
-    <div class="sec"><span data-en="Holders & PINs" data-ar="المستلمون والرموز">Holders & PINs</span></div>
-    <div id="holder-setup-list"></div>
-    <button class="add-holder-btn" onclick="addHolderSetup()">＋ <span data-en="Add Holder" data-ar="إضافة مستلم">Add Holder</span></button>
-    <button class="btn gold" id="save-setup-btn" onclick="saveSetup()">✓ <span data-en="Save Setup" data-ar="حفظ الإعداد">Save Setup</span></button>
-    <div class="divider"></div>
-    <button class="btn wa" onclick="sendWhatsApp()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      <span data-en="Notify Holders via WhatsApp" data-ar="إشعار المستلمين عبر واتساب">Notify Holders via WhatsApp</span>
-    </button>
-    <button class="btn outline" onclick="show('pg-months')">← <span data-en="All Months" data-ar="جميع الأشهر">All Months</span></button>
-  </div>
-
-  <!-- SUMMARY -->
-  <div id="tab-summary" style="display:none">
-    <div class="grand-total">
-      <div class="gt-grid">
-        <div><div class="gt-lbl" data-en="Total Allocated" data-ar="إجمالي المخصص">Total Allocated</div><div class="gt-val gold" id="gt-alloc">—</div></div>
-        <div><div class="gt-lbl" data-en="Total Expenses" data-ar="إجمالي المصروفات">Total Expenses</div><div class="gt-val" id="gt-exp">—</div></div>
-        <div><div class="gt-lbl" data-en="Total Remaining" data-ar="إجمالي المتبقي">Total Remaining</div><div class="gt-val grn" id="gt-rem">—</div></div>
-        <div><div class="gt-lbl" data-en="Total Over Spent" data-ar="إجمالي الزيادة">Total Over Spent</div><div class="gt-val red" id="gt-over">0.000</div></div>
-      </div>
-    </div>
-    <div id="holder-summaries"><div class="loading"><div class="spinner"></div></div></div>
-    <div class="divider"></div>
-    <div class="sec"><span data-en="Year to Date" data-ar="من بداية السنة">Year to Date</span></div>
-    <div id="ytd-section"><div class="loading"><div class="spinner"></div></div></div>
-    <div class="divider"></div>
-    <div class="btn-row no-print">
-      <button class="btn outline" onclick="exportExcel()" style="flex:1">📊 Excel</button>
-      <button class="btn purple" onclick="exportPDF()" style="flex:1">📄 PDF</button>
-    </div>
-  </div>
-
-  <!-- APPROVE -->
-  <div id="tab-approve" style="display:none">
-    <div class="sec"><span data-en="Holder Approvals" data-ar="موافقات المستلمين">Holder Approvals</span></div>
-    <div id="holder-approve-list"><div class="loading"><div class="spinner"></div></div></div>
-    <div class="divider"></div>
-    <div class="sec"><span data-en="Final Sign-off" data-ar="التوقيع النهائي">Final Sign-off</span></div>
-    <div id="final-approve-section"></div>
-  </div>
-
-  <!-- AUDIT LOG -->
-  <div id="tab-audit" style="display:none">
-    <div class="sec"><span data-en="Audit Trail" data-ar="سجل المراجعة">Audit Trail</span></div>
-    <div class="card" id="audit-list"><div class="loading"><div class="spinner"></div></div></div>
   </div>
 </div>
 
-<!-- FIREBASE SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-<!-- SHEETJS FOR EXCEL -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- ── PERSON MODAL ───────────────────────────────────────────── -->
+<div class="backdrop" id="person-bd">
+  <div class="modal sm">
+    <div class="modal-hdr"><div class="modal-title" id="person-modal-title">Add Person</div><button class="modal-close" onclick="closeBackdrop('person-bd')">✕</button></div>
+    <div class="modal-body">
+      <div class="f"><label>Full Name *</label><input type="text" id="pm-name"></div>
+      <div class="f"><label>Site *</label><select id="pm-site"><option value="A">Site A (Josette)</option><option value="B">Site B (Jubina)</option></select></div>
+      <div class="btn-row"><button class="btn out" onclick="closeBackdrop('person-bd')">Cancel</button><button class="btn gold" id="pm-save-btn" onclick="savePerson()">Save</button></div>
+    </div>
+  </div>
+</div>
 
-<script>
-// ── FIREBASE INIT ──────────────────────────────────────────────
-const firebaseConfig = {
-  apiKey: "AIzaSyCwSeV6ee9MEkUXGiCazr28bV9E0ddLbE0",
-  authDomain: "royaleng-petty-cash.firebaseapp.com",
-  databaseURL: "https://royaleng-petty-cash-default-rtdb.firebaseio.com",
-  projectId: "royaleng-petty-cash",
-  storageBucket: "royaleng-petty-cash.firebasestorage.app",
-  messagingSenderId: "701547062928",
-  appId: "1:701547062928:web:78070c3b9d17b4c38eda15"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+<!-- ── PERIOD MODAL ───────────────────────────────────────────── -->
+<div class="backdrop" id="period-bd">
+  <div class="modal sm">
+    <div class="modal-hdr"><div class="modal-title" id="period-modal-title">New Period</div><button class="modal-close" onclick="closeBackdrop('period-bd')">✕</button></div>
+    <div class="modal-body">
+      <div class="f"><label>Period Name *</label><input type="text" id="pd-name" placeholder="e.g. Q2 2025"></div>
+      <div class="f"><label>Starting Balance (KWD) *</label><input type="number" id="pd-balance" step="0.001" min="0" placeholder="0.000"></div>
+      <div class="f"><label>Status</label><select id="pd-status"><option value="Draft">Draft</option><option value="Active">Active</option></select></div>
+      <div class="btn-row"><button class="btn out" onclick="closeBackdrop('period-bd')">Cancel</button><button class="btn gold" id="pd-save-btn" onclick="savePeriod()">Save Period</button></div>
+    </div>
+  </div>
+</div>
 
-// FIX: Monitor Firebase connectivity
-db.ref('.info/connected').on('value', snap => {
-  const online = snap.val() === true;
-  const dot    = document.getElementById('conn-dot');
-  const banner = document.getElementById('offline-banner');
-  if (dot) { dot.classList.toggle('online', online); dot.title = online ? 'Connected' : 'Offline'; }
-  if (banner) banner.style.display = online ? 'none' : 'block';
-});
+<!-- ── COMMENT MODAL ──────────────────────────────────────────── -->
+<div class="backdrop" id="comment-bd">
+  <div class="modal sm">
+    <div class="modal-hdr"><div class="modal-title">Add Comment</div><button class="modal-close" onclick="closeBackdrop('comment-bd')">✕</button></div>
+    <div class="modal-body">
+      <div class="f"><label>Comment *</label><textarea id="cmt-text" style="height:80px;" placeholder="Your comment…"></textarea></div>
+      <div class="btn-row"><button class="btn out" onclick="closeBackdrop('comment-bd')">Cancel</button><button class="btn pur" onclick="saveComment()">Post Comment</button></div>
+    </div>
+  </div>
+</div>
 
-// ── STATE ──────────────────────────────────────────────────────
-let curUser      = null;
-let curMonthId   = null;
-let curMonthData = null;
-let pendingPerson= null;
-let inactivityTimer = null;
-let lang = 'en';
-let expListenerRef  = null;   // tracked Firebase listener { ref, fn }
-let saveDebounces   = {};     // per expId:field key
-let tmpPins         = {};     // cleared immediately after hashing
-let pinSubmitting   = false;  // prevent double-submit race
-let isSaving        = false;
-let toastTimer      = null;
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════════════════════ -->
+<nav class="sidebar" id="sidebar" style="display:none">
+  <div class="sb-logo">
+    <div class="sb-logo-box">RE</div>
+    <div class="sb-logo-name">Royal Eng</div>
+    <div class="sb-logo-sub">Petty Cash</div>
+  </div>
+  <div class="sb-nav">
+    <div class="nav-item active" data-view="dashboard" onclick="nav('dashboard')"><span class="ni">⊞</span>Dashboard</div>
+    <div class="nav-item" data-view="invoices" onclick="nav('invoices')"><span class="ni">🧾</span>Invoices</div>
+    <div class="nav-item" data-view="advances" onclick="nav('advances')"><span class="ni">💵</span>Cash Advances</div>
+    <div class="nav-item" data-view="reports" onclick="nav('reports')"><span class="ni">📊</span>Reports</div>
+    <div class="nav-divider"></div>
+    <div class="nav-section admin-only">Admin</div>
+    <div class="nav-item admin-only" data-view="admin-periods" onclick="nav('admin-periods')"><span class="ni">📅</span>Periods</div>
+    <div class="nav-item admin-only" data-view="admin-users" onclick="nav('admin-users')"><span class="ni">👥</span>Users & People</div>
+    <div class="nav-item admin-only" data-view="admin-audit" onclick="nav('admin-audit')"><span class="ni">📋</span>Audit Trail</div>
+    <div class="nav-divider"></div>
+    <div class="nav-item" onclick="doSignOut()"><span class="ni">↩</span>Sign Out</div>
+  </div>
+  <div class="sb-footer">
+    <div class="conn-row"><div class="cdot" id="cdot"></div><span id="clbl">Connecting…</span></div>
+  </div>
+</nav>
 
-// FIX: Persist pin attempts in sessionStorage so page refresh doesn't reset counter
-let pinAttempts = {};
-try { pinAttempts = JSON.parse(sessionStorage.getItem('re_pin_attempts') || '{}'); } catch(_){}
-function savePinAttempts() {
-  try { sessionStorage.setItem('re_pin_attempts', JSON.stringify(pinAttempts)); } catch(_){}
-}
+<!-- ═══════════════════════════════════════════════════════════════
+     MAIN
+═══════════════════════════════════════════════════════════════ -->
+<div class="main" id="main-app" style="display:none">
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-title" id="tb-title">Dashboard</div>
+      <div class="period-pill" id="period-pill" style="display:none"></div>
+    </div>
+    <div class="tb-right">
+      <span class="tb-user" id="tb-user"></span>
+      <span class="role-badge" id="tb-role"></span>
+    </div>
+  </div>
+  <div class="offline-banner" id="offline-banner-main"></div>
+  <div class="balance-strip" id="balance-strip">
+    <div class="bs-item"><div class="bs-label">Starting Balance</div><div class="bs-val gold" id="bs-start">—</div></div>
+    <div class="bs-item"><div class="bs-label">Total Invoiced</div><div class="bs-val" id="bs-inv">0.000</div></div>
+    <div class="bs-item"><div class="bs-label">Open Advances</div><div class="bs-val" id="bs-adv">0.000</div></div>
+    <div class="bs-item"><div class="bs-label">True Remaining</div><div class="bs-val" id="bs-rem">—</div></div>
+  </div>
 
-// ── SECURITY: SHA-256 ──────────────────────────────────────────
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
+  <div class="content">
 
-// ── LANGUAGE ───────────────────────────────────────────────────
-function toggleLang() {
-  lang = lang === 'en' ? 'ar' : 'en';
-  document.documentElement.lang = lang;
-  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-  document.getElementById('lang-btn').textContent = lang === 'en' ? 'عربي' : 'English';
-  document.querySelectorAll('[data-en]').forEach(el => {
-    el.textContent = el.getAttribute('data-' + lang) || el.getAttribute('data-en');
-  });
-}
-
-// ── INACTIVITY LOGOUT ──────────────────────────────────────────
-function resetInactivity() {
-  clearTimeout(inactivityTimer);
-  if (curUser) {
-    inactivityTimer = setTimeout(() => {
-      showToast(lang === 'ar' ? 'تم تسجيل الخروج تلقائياً' : 'Auto logged out due to inactivity', 'err');
-      setTimeout(signOut, 1500);
-    }, 10 * 60 * 1000);
-  }
-}
-document.addEventListener('touchstart', resetInactivity, {passive:true});
-document.addEventListener('click', resetInactivity, {passive:true});
-document.addEventListener('keydown', resetInactivity, {passive:true});
-
-// FIX: Warn before unload if saving
-window.addEventListener('beforeunload', e => {
-  if (isSaving) { e.preventDefault(); e.returnValue = ''; }
-});
-
-// ── TOAST ──────────────────────────────────────────────────────
-function showToast(msg, type = '') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show ' + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
-}
-
-// ── SHOW PAGE ──────────────────────────────────────────────────
-function show(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
-  document.getElementById(id).classList.add('on');
-  window.scrollTo(0, 0);
-}
-
-// ── AUDIT LOG ──────────────────────────────────────────────────
-function logAudit(action, detail = '') {
-  if (!curMonthId) return;
-  const ref = db.ref('audit/' + curMonthId).push();
-  ref.set({
-    action,
-    user: curUser ? curUser.name : 'System',
-    timestamp: new Date().toISOString(),
-    detail
-  });
-}
-
-// ── LOAD MONTHS (WHO PAGE) ─────────────────────────────────────
-async function loadWhoPage() {
-  const list = document.getElementById('person-list');
-  list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-
-  // Load all months to find active ones
-  db.ref('months').once('value', snap => {
-    const months = snap.val() || {};
-    const activeMonths = Object.entries(months).filter(([id, m]) => m.meta && m.meta.status === 'active');
-
-    list.innerHTML = '';
-
-    if (activeMonths.length === 0) {
-      list.innerHTML = `<div class="card" style="text-align:center;padding:24px;">
-        <div style="font-size:32px;margin-bottom:8px;">📋</div>
-        <div style="font-weight:700;color:var(--purple);margin-bottom:4px;" data-en="No active month" data-ar="لا يوجد شهر نشط">${lang==='ar'?'لا يوجد شهر نشط':'No active month'}</div>
-        <div style="font-size:13px;color:var(--muted);" data-en="Ask admin to activate the current month" data-ar="اطلب من المدير تفعيل الشهر الحالي">${lang==='ar'?'اطلب من المدير تفعيل الشهر الحالي':'Ask admin to activate the current month'}</div>
-      </div>`;
-    } else {
-      // Use most recent active month
-      const [monthId, monthData] = activeMonths[activeMonths.length - 1];
-      curMonthId = monthId;
-      curMonthData = monthData;
-
-      document.getElementById('hdr-pcno').textContent = 'No. ' + (monthData.meta.pcno || '—');
-      document.getElementById('hdr-meta').textContent = fmtMonth(monthData.meta.month);
-
-      // Build person buttons
-      const holders = monthData.holders || {};
-      Object.entries(holders).forEach(([hid, h]) => {
-        const initials = h.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
-        const statusTxt = h.status === 'submitted' ? (lang==='ar'?'مُرسل':'Submitted') :
-                          h.status === 'rejected' ? (lang==='ar'?'مرفوض':'Rejected') : '';
-        const btn = document.createElement('button');
-        btn.className = 'person-btn';
-        btn.innerHTML = `<div class="avatar">${initials}</div>
-          <div style="flex:1">
-            <div class="p-name">${h.name}</div>
-            <div class="p-role" data-en="Holder" data-ar="مستلم">${lang==='ar'?'مستلم':'Holder'}</div>
-            ${statusTxt ? `<div class="p-status" style="color:var(--${h.status==='submitted'?'green':'red'})">${statusTxt}</div>` : ''}
-          </div>
-          <div style="font-size:24px;color:var(--border);">›</div>`;
-        btn.onclick = () => openPin({ name: h.name, type: 'holder', holderId: hid, monthId });
-        list.appendChild(btn);
-      });
-    }
-
-    // Admin button always
-    const adminBtn = document.createElement('button');
-    adminBtn.className = 'person-btn';
-    adminBtn.innerHTML = `<div class="avatar adm">A</div>
-      <div style="flex:1">
-        <div class="p-name" data-en="Admin / Manager" data-ar="المدير">${lang==='ar'?'المدير':'Admin / Manager'}</div>
-        <div class="p-role" data-en="Full access" data-ar="صلاحية كاملة">${lang==='ar'?'صلاحية كاملة':'Full access'}</div>
+    <!-- ── DASHBOARD ──────────────────────────────────────────── -->
+    <div class="view active" id="view-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-lbl">Total Invoiced</div><div class="stat-val pur" id="ds-inv">0.000</div><div class="stat-sub">KWD this period</div></div>
+        <div class="stat-card"><div class="stat-lbl">Open Advances</div><div class="stat-val gold" id="ds-adv">0.000</div><div class="stat-sub">KWD outstanding</div></div>
+        <div class="stat-card"><div class="stat-lbl">Invoices</div><div class="stat-val" id="ds-inv-count">0</div><div class="stat-sub">this period</div></div>
+        <div class="stat-card"><div class="stat-lbl">Advances</div><div class="stat-val" id="ds-adv-count">0</div><div class="stat-sub">this period</div></div>
       </div>
-      <div style="font-size:24px;color:var(--border);">›</div>`;
-    adminBtn.onclick = () => openPin({ name: 'Admin', type: 'admin' });
-    list.appendChild(adminBtn);
-  });
-}
-
-// ── PIN ────────────────────────────────────────────────────────
-let curPin = '';
-
-function openPin(p) {
-  pendingPerson = p; curPin = '';
-  const key = p.name;
-  if (pinAttempts[key] >= 3) {
-    document.getElementById('pin-for').textContent = p.name;
-    document.getElementById('pin-err').textContent = '';
-    document.getElementById('pin-locked').style.display = 'block';
-    show('pg-pin'); return;
-  }
-  document.getElementById('pin-for').textContent = p.name;
-  document.getElementById('pin-err').textContent = '';
-  document.getElementById('pin-locked').style.display = 'none';
-  updateDots();
-  show('pg-pin');
-}
-
-function np(d) { if (curPin.length < 4) { curPin += d; updateDots(); } }
-function nc() { curPin = ''; updateDots(); document.getElementById('pin-err').textContent = ''; }
-function updateDots() {
-  for (let i = 0; i < 4; i++) document.getElementById('dt' + i).classList.toggle('on', i < curPin.length);
-}
-
-async function ne() {
-  if (!pendingPerson) return;
-  const key = pendingPerson.name;
-  if (pinAttempts[key] >= 3) return;
-  if (curPin.length < 4) {
-    document.getElementById('pin-err').textContent = lang === 'ar' ? 'أدخل 4 أرقام' : 'Please enter all 4 digits.';
-    return;
-  }
-  const enteredHash = await sha256(curPin);
-
-  if (pendingPerson.type === 'admin') {
-    // Admin PIN stored in Firebase
-    db.ref('adminPinHash').once('value', async snap => {
-      const storedHash = snap.val();
-      if (!storedHash) {
-        // First time — set admin PIN
-        await db.ref('adminPinHash').set(enteredHash);
-        loginSuccess(pendingPerson);
-      } else if (enteredHash === storedHash) {
-        pinAttempts[key] = 0;
-        loginSuccess(pendingPerson);
-      } else {
-        pinFail(key);
-      }
-    });
-  } else {
-    // Holder PIN
-    const h = curMonthData.holders[pendingPerson.holderId];
-    if (!h) { pinFail(key); return; }
-    if (enteredHash === h.pinHash) {
-      pinAttempts[key] = 0;
-      loginSuccess(pendingPerson);
-    } else {
-      pinFail(key);
-    }
-  }
-}
-
-function pinFail(key) {
-  pinAttempts[key] = (pinAttempts[key] || 0) + 1;
-  savePinAttempts(); // FIX: persist so refresh doesn't reset counter
-  const remaining = 3 - pinAttempts[key];
-  if (remaining <= 0) {
-    document.getElementById('pin-locked').style.display = 'block';
-    document.getElementById('pin-err').textContent = '';
-    if (curMonthId) logAudit('PIN_LOCKED', (pendingPerson?.name||'?') + ' locked after 3 failed attempts');
-  } else {
-    const msg = lang === 'ar'
-      ? 'رمز خاطئ. ' + remaining + ' محاولات متبقية'
-      : 'Incorrect PIN. ' + remaining + ' attempt' + (remaining===1?'':'s') + ' remaining';
-    document.getElementById('pin-err').textContent = msg;
-  }
-  curPin = ''; updateDots();
-}
-
-function loginSuccess(p) {
-  curUser = p;
-  document.getElementById('hdr-user').textContent = p.name;
-  document.getElementById('hdr-user').style.display = 'block';
-  document.getElementById('signout-btn').style.display = 'block';
-  resetInactivity();
-  logAudit('LOGIN', p.name + ' logged in');
-  if (p.type === 'admin') {
-    loadAdminMonths();
-    show('pg-months');
-  } else {
-    loadHolderForm(p);
-    show('pg-form');
-  }
-}
-
-function signOut() {
-  // FIX: Detach Firebase listener to prevent memory leaks
-  if (expListenerRef) {
-    expListenerRef.ref.off('value', expListenerRef.fn);
-    expListenerRef = null;
-  }
-  // FIX: Clear plain PINs from memory
-  Object.keys(tmpPins).forEach(k => delete tmpPins[k]);
-  if (curUser && curMonthId) logAudit('LOGOUT', curUser.name + ' signed out');
-  curUser = null; curPin = ''; curMonthId = null; curMonthData = null; pendingPerson = null;
-  clearTimeout(inactivityTimer);
-  document.getElementById('hdr-user').style.display = 'none';
-  document.getElementById('signout-btn').style.display = 'none';
-  document.getElementById('hdr-pcno').textContent = '—';
-  document.getElementById('hdr-meta').textContent = '—';
-  loadWhoPage();
-  show('pg-who');
-}
-
-// ── HOLDER FORM ────────────────────────────────────────────────
-function loadHolderForm(p) {
-  const h = curMonthData.holders[p.holderId];
-  document.getElementById('f-name').value = h.name;
-  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('f-pcno').value = curMonthData.meta.pcno || '—';
-  document.getElementById('f-cash-display').textContent = parseFloat(h.cash || 0).toFixed(3);
-
-  const status = h.status || 'pending';
-  const bar = document.getElementById('form-status-bar');
-  const txt = document.getElementById('form-status-txt');
-  const submitBtn = document.getElementById('submit-btn');
-  const addBtn = document.getElementById('add-exp-btn');
-
-  bar.className = 'status-bar ' + status;
-
-  const statusMsgs = {
-    pending: { en: 'Fill in your expenses and submit when done', ar: 'أدخل مصروفاتك وأرسل عند الانتهاء' },
-    submitted: { en: '✓ Form submitted — awaiting approval', ar: '✓ تم إرسال النموذج — بانتظار الموافقة' },
-    rejected: { en: 'Form was rejected — please correct and resubmit', ar: 'تم رفض النموذج — يرجى التصحيح وإعادة الإرسال' },
-    approved: { en: '✓ Form approved', ar: '✓ تمت الموافقة على النموذج' }
-  };
-  txt.textContent = statusMsgs[status]?.[lang] || statusMsgs[status]?.en || status;
-
-  const canEdit = status === 'pending' || status === 'rejected';
-  submitBtn.disabled = !canEdit;
-  addBtn.disabled = !canEdit;
-
-  if (status === 'rejected' && h.rejectionNote) {
-    document.getElementById('rejection-note').style.display = 'flex';
-    document.getElementById('rejection-note-text').textContent = h.rejectionNote;
-  } else {
-    document.getElementById('rejection-note').style.display = 'none';
-  }
-
-  // FIX: Track listener ref so it can be properly removed
-  const expRef = db.ref('months/' + curMonthId + '/holders/' + p.holderId + '/expenses');
-  const expFn  = snap => {
-    const raw  = snap.val();
-    const expenses = raw
-      ? Object.entries(raw)
-          .map(([id, e]) => ({...e, _id: id}))
-          .sort((a, b) => (a.createdAt||'').localeCompare(b.createdAt||''))
-      : [];
-    renderExpenses(p.holderId, expenses, canEdit, parseFloat(h.cash || 0));
-  };
-  expRef.on('value', expFn);
-  expListenerRef = {ref: expRef, fn: expFn};
-}
-
-function renderExpenses(holderId, expenses, canEdit, cash) {
-  const el = document.getElementById('exp-list');
-  el.innerHTML = '';
-  expenses.forEach((e, i) => {
-    const card = document.createElement('div');
-    card.className = 'exp-card';
-    const ro = canEdit ? '' : 'class="ro" readonly';
-    card.innerHTML = `
-      <div class="exp-top">
-        <div class="exp-badge">${i + 1}</div>
-        <div class="exp-title">${lang==='ar'?'مصروف':'Expense'} ${i + 1}</div>
-        ${canEdit ? `<button class="exp-del" onclick="delExp('${holderId}','${e._id}')">×</button>` : ''}
-      </div>
-      <div class="ef">
-        <label data-en="Description" data-ar="الوصف">${lang==='ar'?'الوصف':'Description'}</label>
-        <input type="text" value="${esc(e.desc||'')}" placeholder="${lang==='ar'?'ما هذا المصروف؟':'What was this for?'}" ${ro} oninput="updateExp('${holderId}','${e._id}','desc',this.value)"/>
-      </div>
-      <div class="ef">
-        <label data-en="Amount (KWD)" data-ar="المبلغ (د.ك)">${lang==='ar'?'المبلغ (د.ك)':'Amount (KWD)'}</label>
-        <input type="number" class="big" value="${e.amt||''}" placeholder="0.000" step="0.001" min="0" ${ro} oninput="updateExp('${holderId}','${e._id}','amt',this.value);calcTotals()"/>
-      </div>
-      <div class="ef2">
-        <div class="ef">
-          <label data-en="Date" data-ar="التاريخ">${lang==='ar'?'التاريخ':'Date'}</label>
-          <input type="date" value="${e.date||''}" ${ro} oninput="updateExp('${holderId}','${e._id}','date',this.value)"/>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Recent Invoices</div><button class="btn out sm" onclick="nav('invoices')">View All →</button></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Invoice No</th><th>Vendor</th><th>Status</th><th style="text-align:right">Amount</th></tr></thead><tbody id="ds-inv-tbody"></tbody></table></div>
         </div>
-        <div class="ef">
-          <label data-en="Invoice No." data-ar="رقم الفاتورة">${lang==='ar'?'رقم الفاتورة':'Invoice No.'}</label>
-          <input type="text" value="${esc(e.invoiceNo||'')}" placeholder="${lang==='ar'?'اختياري':'Optional'}" ${ro} oninput="updateExp('${holderId}','${e._id}','invoiceNo',this.value)"/>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Open Advances</div><button class="btn out sm" onclick="nav('advances')">View All →</button></div>
+          <div id="ds-adv-list" style="padding:8px 12px;"></div>
         </div>
       </div>
-      <div class="ef">
-        <label data-en="Purchased / Requested By" data-ar="اشترى / طلب من">${lang==='ar'?'اشترى / طلب من':'Purchased / Requested By'}</label>
-        <input type="text" value="${esc(e.requestedBy||'')}" placeholder="${lang==='ar'?'الاسم':'Name'}" ${ro} oninput="updateExp('${holderId}','${e._id}','requestedBy',this.value)"/>
-      </div>
-      ${canEdit ? `<button class="opt-toggle" onclick="toggleOpt(this)">${lang==='ar'?'＋ مشروع ومرجع (اختياري)':'＋ Project & Reference (optional)'}</button>` : ''}
-      <div class="opt-sec ${(e.project||e.refNo)?'open':''}">
-        <div class="ef2" style="margin-top:8px;">
-          <div class="ef">
-            <label data-en="Project" data-ar="المشروع">${lang==='ar'?'المشروع':'Project'}</label>
-            <input type="text" value="${esc(e.project||'')}" placeholder="${lang==='ar'?'اسم المشروع':'Project name'}" ${ro} oninput="updateExp('${holderId}','${e._id}','project',this.value)"/>
-          </div>
-          <div class="ef">
-            <label data-en="Reference No." data-ar="رقم المرجع">${lang==='ar'?'رقم المرجع':'Reference No.'}</label>
-            <input type="text" value="${esc(e.refNo||'')}" placeholder="${lang==='ar'?'رقم المرجع':'Ref no.'}" ${ro} oninput="updateExp('${holderId}','${e._id}','refNo',this.value)"/>
+    </div>
+
+    <!-- ── INVOICES LIST ──────────────────────────────────────── -->
+    <div class="view" id="view-invoices">
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">Invoices</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <div class="filter-bar">
+              <input class="fi" type="text" id="inv-search" placeholder="Search…" oninput="renderInvoices()">
+              <select class="fs" id="inv-f-purchaser" onchange="renderInvoices()"><option value="">All purchasers</option></select>
+              <select class="fs" id="inv-f-status" onchange="renderInvoices()"><option value="">All statuses</option><option value="Draft">Draft</option><option value="Submitted">Submitted</option></select>
+              <select class="fs" id="inv-f-cat" onchange="renderInvoices()"><option value="">All categories</option></select>
+            </div>
+            <button class="btn gold sm" id="inv-new-btn" onclick="nav('invoice-form')">＋ New Invoice</button>
           </div>
         </div>
-      </div>`;
-    el.appendChild(card);
-  });
-  calcTotals();
-}
-
-function esc(str) {
-  // FIX: escape all 5 HTML special chars to prevent XSS
-  return String(str == null ? '' : str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-function updateExp(holderId, expId, field, value) {
-  // FIX: Use expId+field as key so concurrent fields don't cancel each other
-  const key = expId + ':' + field;
-  clearTimeout(saveDebounces[key]);
-  isSaving = true;
-  saveDebounces[key] = setTimeout(async () => {
-    try {
-      const update = { [field]: field === 'amt' ? Math.max(0, parseFloat(value) || 0) : value };
-      await db.ref('months/' + curMonthId + '/holders/' + holderId + '/expenses/' + expId).update(update);
-    } catch(e) {
-      showToast('⚠ Save failed: ' + e.message, 'err');
-    } finally {
-      isSaving = false;
-    }
-  }, 700);
-}
-
-function addExp() {
-  if (!curUser || curUser.type !== 'holder') return;
-  const holderId = curUser.holderId;
-  const ref = db.ref('months/' + curMonthId + '/holders/' + holderId + '/expenses').push();
-  ref.set({ desc: '', amt: 0, date: new Date().toISOString().split('T')[0], invoiceNo: '', requestedBy: '', project: '', refNo: '', createdAt: new Date().toISOString() });
-  logAudit('ADD_EXPENSE', 'Expense added by ' + curUser.name);
-    // FIX: Scroll after DOM settles
-    setTimeout(() => {
-      const cards = document.querySelectorAll('#exp-list .exp-card');
-      if (cards.length) cards[cards.length-1].scrollIntoView({behavior:'smooth', block:'nearest'});
-    }, 300);
-}
-
-function delExp(holderId, expId) {
-  if (!confirm(lang === 'ar' ? 'حذف هذا المصروف؟' : 'Delete this expense?')) return;
-  db.ref('months/' + curMonthId + '/holders/' + holderId + '/expenses/' + expId).remove();
-  logAudit('DELETE_EXPENSE', 'Expense deleted by ' + curUser.name);
-}
-
-function calcTotals() {
-  const h = curMonthData?.holders?.[curUser?.holderId];
-  if (!h) return;
-  const cash = parseFloat(h.cash || 0);
-  // FIX: Only select amount inputs within exp-cards (not hidden opt-sec inputs)
-  const amts = document.querySelectorAll('#exp-list .exp-card input[type=number]');
-  const exp = Array.from(amts).reduce((s, i) => s + Math.max(0, parseFloat(i.value) || 0), 0);
-  const rem = Math.max(0, cash - exp), over = Math.max(0, exp - cash);
-  document.getElementById('tc').textContent = cash.toFixed(3);
-  document.getElementById('te').textContent = exp.toFixed(3);
-  document.getElementById('tr').textContent = rem.toFixed(3);
-  document.getElementById('to').textContent = over.toFixed(3);
-  document.getElementById('tr').className = 't-val ' + (rem > 0 ? 'grn' : '');
-  document.getElementById('to').className = 't-val ' + (over > 0 ? 'red' : '');
-}
-
-function toggleOpt(btn) {
-  // FIX: Search for opt-sec sibling more robustly than nextElementSibling
-  let sec = btn.nextElementSibling;
-  while (sec && !sec.classList.contains('opt-sec')) sec = sec.nextElementSibling;
-  if (!sec) return;
-  const open = sec.classList.toggle('open');
-  btn.textContent = open ? (lang==='ar'?'− إخفاء المشروع والمرجع':'− Hide Project & Reference') : (lang==='ar'?'＋ مشروع ومرجع (اختياري)':'＋ Project & Reference (optional)');
-}
-
-async function submitForm() {
-  const holderId = curUser.holderId;
-  const btn = document.getElementById('submit-btn');
-  if (btn) btn.disabled = true;
-  try {
-  // FIX: Always read from Firebase, not stale local cache
-  const freshSnap = await db.ref('months/' + curMonthId + '/holders/' + holderId + '/expenses').once('value');
-  const freshExps = freshSnap.val() || {};
-  const expArr = Object.values(freshExps);
-  if (expArr.length === 0) { showToast(lang==='ar'?'أضف مصروفاً واحداً على الأقل':'Add at least one expense', 'err'); if(btn) btn.disabled=false; return; }
-  const hasEmpty = expArr.some(e => !String(e.desc||'').trim() || !(parseFloat(e.amt) > 0));
-  if (hasEmpty) { showToast(lang==='ar'?'أكمل الوصف والمبلغ لجميع المصروفات':'Fill Description and Amount (>0) for all expenses', 'err'); if(btn) btn.disabled=false; return; }
-  if (!confirm(lang==='ar'?'إرسال النموذج؟ لن تتمكن من التعديل بعد الإرسال.':'Submit form? You cannot edit after submission.')) return;
-  await db.ref('months/' + curMonthId + '/holders/' + holderId).update({ status: 'submitted', submittedAt: new Date().toISOString() });
-  logAudit('FORM_SUBMITTED', curUser.name + ' submitted their form');
-  showToast(lang==='ar'?'✓ تم إرسال النموذج':'✓ Form submitted successfully', 'ok');
-  loadHolderForm(curUser);
-  } catch(e) {
-    showToast('⚠ ' + e.message, 'err');
-    if(btn) btn.disabled = false;
-  }
-}
-
-// ── ADMIN MONTHS ───────────────────────────────────────────────
-function loadAdminMonths() {
-  const list = document.getElementById('months-list');
-  list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-  db.ref('months').once('value', snap => {
-    list.innerHTML = '';
-    const months = snap.val() || {};
-    const entries = Object.entries(months).sort((a, b) => (b[1].meta?.month || '').localeCompare(a[1].meta?.month || ''));
-    if (entries.length === 0) {
-      list.innerHTML = `<div class="card" style="text-align:center;padding:20px;color:var(--muted);font-size:14px;">${lang==='ar'?'لا توجد أشهر بعد':'No months yet. Create your first month above.'}</div>`;
-      return;
-    }
-    entries.forEach(([id, m]) => {
-      const meta = m.meta || {};
-      const holders = m.holders || {};
-      const submitted = Object.values(holders).filter(h => h.status === 'submitted' || h.status === 'approved').length;
-      const total = Object.values(holders).length;
-      const card = document.createElement('div');
-      card.className = 'month-card' + (meta.status === 'active' ? ' active-month' : '');
-      card.innerHTML = `
-        <div class="mc-left">
-          <div class="mc-name">No. ${meta.pcno || '—'} · ${fmtMonth(meta.month)}</div>
-          <div class="mc-date">${submitted}/${total} ${lang==='ar'?'مُرسل':'submitted'}</div>
+        <div class="tbl-wrap">
+          <table><thead><tr>
+            <th>Invoice No</th><th>Vendor / Project</th><th>Requested By</th>
+            <th>Purchased By</th><th>Entered By</th>
+            <th style="text-align:right">Amount (KWD)</th>
+            <th>Status</th><th></th>
+          </tr></thead><tbody id="inv-tbody"></tbody></table>
         </div>
-        <div class="mc-right">
-          <span class="pill ${meta.status || 'draft'}">${statusLabel(meta.status)}</span>
-        </div>`;
-      card.onclick = () => openAdminMonth(id, m);
-      list.appendChild(card);
-    });
-  });
-}
-
-function createNewMonth() {
-  const id = 'month_' + Date.now();
-  const now = new Date();
-  const monthStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
-  curMonthId = id;
-  curMonthData = { meta: { pcno: '', month: monthStr, status: 'draft', ap1Name: '', ap2Name: '' }, holders: {} };
-  loadAdminSetup();
-  show('pg-admin');
-  switchTab('setup');
-}
-
-function openAdminMonth(id, data) {
-  curMonthId = id;
-  curMonthData = data;
-  document.getElementById('hdr-pcno').textContent = 'No. ' + (data.meta?.pcno || '—');
-  document.getElementById('hdr-meta').textContent = fmtMonth(data.meta?.month);
-  loadAdminSetup();
-  show('pg-admin');
-  switchTab('setup');
-}
-
-// ── ADMIN SETUP ────────────────────────────────────────────────
-function loadAdminSetup() {
-  const meta = curMonthData?.meta || {};
-  document.getElementById('a-pcno').value = meta.pcno || '';
-  document.getElementById('a-month').value = meta.month || '';
-  document.getElementById('a-status').value = meta.status || 'draft';
-  document.getElementById('ap1-name').value = meta.ap1Name || '';
-  document.getElementById('ap2-name').value = meta.ap2Name || '';
-  buildHolderSetup();
-}
-
-function buildHolderSetup() {
-  const el = document.getElementById('holder-setup-list');
-  el.innerHTML = '';
-  const holders = Object.entries(curMonthData?.holders || {});
-  holders.forEach(([hid, h], i) => {
-    const div = document.createElement('div');
-    div.className = 'sh';
-    div.innerHTML = `
-      <div class="sh-top">
-        <div class="sh-num">${i + 1}</div>
-        <div class="sh-title">${h.name || (lang==='ar'?'مستلم جديد':'New Holder')}</div>
-        <button class="sh-del" onclick="removeHolder('${hid}')">×</button>
+        <div id="inv-empty" class="empty-state" style="display:none"><div class="empty-icon">🧾</div><div class="empty-text">No invoices yet</div><div class="empty-sub">Click "+ New Invoice" to add the first one.</div></div>
+        <div id="inv-loading" class="loading"><div class="spinner"></div>Loading…</div>
       </div>
-      <div class="sh-grid">
-        <div class="sh-f"><label data-en="Full Name" data-ar="الاسم الكامل">${lang==='ar'?'الاسم الكامل':'Full Name'}</label>
-          <input type="text" value="${esc(h.name||'')}" placeholder="${lang==='ar'?'الاسم الكامل':'Full name'}" oninput="curMonthData.holders['${hid}'].name=this.value;this.closest('.sh').querySelector('.sh-title').textContent=this.value"/></div>
-        <div class="sh-f"><label data-en="Cash Allocated (KWD)" data-ar="المبلغ المخصص (د.ك)">${lang==='ar'?'المبلغ المخصص (د.ك)':'Cash Allocated (KWD)'}</label>
-          <input type="number" value="${h.cash||''}" step="0.001" min="0" placeholder="0.000" oninput="curMonthData.holders['${hid}'].cash=parseFloat(this.value)||0"/></div>
-        <div class="sh-f">
-          <label data-en="PIN (4 digits)" data-ar="الرمز (4 أرقام)">${lang==='ar'?'الرمز (4 أرقام)':'PIN (4 digits)'}</label>
-          <input type="password" maxlength="4" pattern="[0-9]{4}" value="" placeholder="••••" id="pin-input-${hid}" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'');tmpPins['${hid}']=this.value"/>
-          <div style="font-size:10px;margin-top:3px;font-weight:600;color:${h.pinHash?'var(--green)':'var(--orange)'}">
-            ${h.pinHash ? (lang==='ar'?'✓ الرمز محدد':'✓ PIN set — leave blank to keep') : (lang==='ar'?'⚠ لم يُحدد الرمز':'⚠ PIN not set yet')}
-          </div>
+    </div>
+
+    <!-- ── INVOICE FORM ───────────────────────────────────────── -->
+    <div class="view" id="view-invoice-form">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;" id="inv-form-title">New Invoice</div>
+        <button class="btn out sm" onclick="nav('invoices')">← Back to Invoices</button>
+      </div>
+      <div class="yellow-banner">⚠ Physical invoice must be filed and available upon request.</div>
+      <div class="inv-section">
+        <div class="inv-sec-title">Invoice Details</div>
+        <input type="hidden" id="if-id">
+        <div class="f3">
+          <div class="f"><label>Invoice No. *</label><input type="text" id="if-no" placeholder="INV-001"></div>
+          <div class="f"><label>Date *</label><input type="date" id="if-date"></div>
+          <div class="f"><label>Status</label><select id="if-status"><option value="Draft">Draft</option><option value="Submitted">Submitted</option></select></div>
         </div>
-        <div class="sh-f"><label data-en="Status" data-ar="الحالة">${lang==='ar'?'الحالة':'Status'}</label>
-          <input type="text" value="${statusLabel(h.status||'pending')}" readonly class="ro"/></div>
-      </div>`;
-    el.appendChild(div);
-  });
-}
-
-
-function addHolderSetup() {
-  const hid = 'h_' + Date.now();
-  if (!curMonthData.holders) curMonthData.holders = {};
-  curMonthData.holders[hid] = { name: '', cash: 0, status: 'pending', pinHash: '' };
-  buildHolderSetup();
-}
-
-function removeHolder(hid) {
-  if (!confirm(lang==='ar'?'حذف هذا المستلم؟':'Remove this holder?')) return;
-  delete curMonthData.holders[hid];
-  buildHolderSetup();
-}
-
-async function saveSetup() {
-  const btn = document.getElementById('save-setup-btn');
-  if (btn && btn.disabled) return; // FIX: prevent double-save
-  if (btn) btn.disabled = true;
-  try { await _doSaveSetup(); } finally { if (btn) btn.disabled = false; }
-}
-async function _doSaveSetup() {
-  const pcno = document.getElementById('a-pcno').value.trim();
-  const month = document.getElementById('a-month').value;
-  const status = document.getElementById('a-status').value;
-  const ap1 = document.getElementById('ap1-name').value.trim();
-  const ap2 = document.getElementById('ap2-name').value.trim();
-
-  if (!pcno || !month) { showToast(lang==='ar'?'أدخل رقم الصندوق والشهر':'Enter Petty Cash No. and Month', 'err'); return; }
-
-  // Validate holders
-  const holders = curMonthData.holders || {};
-  for (const [hid, h] of Object.entries(holders)) {
-    if (!h.name) { showToast(lang==='ar'?'أدخل اسم كل مستلم':'Enter name for all holders', 'err'); return; }
-    if (!h.cash || h.cash <= 0) { showToast(`${lang==='ar'?'أدخل مبلغاً لـ':'Enter cash amount for '} ${h.name}`, 'err'); return; }
-    if (tmpPins[hid]) {
-      if (tmpPins[hid].length !== 4) { showToast(`${lang==='ar'?'الرمز يجب أن يكون 4 أرقام لـ':'PIN must be 4 digits for '} ${h.name}`, 'err'); return; }
-      h.pinHash = await sha256(tmpPins[hid]);
-    }
-  }
-
-  // Check duplicate PINs
-  const pinsArr = Object.values(tmpPins).filter(p => p.length === 4);
-  if (new Set(pinsArr).size !== pinsArr.length) { showToast(lang==='ar'?'لا يمكن تكرار الرموز بين المستلمين':'Duplicate PINs found', 'err'); return; }
-
-  curMonthData.meta = { pcno, month, status, ap1Name: ap1, ap2Name: ap2 };
-
-  await db.ref('months/' + curMonthId).set(curMonthData);
-  logAudit('SETUP_SAVED', `Month ${pcno} ${fmtMonth(month)} saved with status ${status}`);
-  document.getElementById('hdr-pcno').textContent = 'No. ' + pcno;
-  document.getElementById('hdr-meta').textContent = fmtMonth(month);
-  // FIX: Clear plain PINs from memory immediately
-  Object.keys(tmpPins).forEach(k => delete tmpPins[k]);
-  showToast(lang==='ar'?'✓ تم حفظ الإعداد':'✓ Setup saved', 'ok');
-  buildHolderSetup(); // refresh PIN set indicators
-}
-
-// ── ADMIN SUMMARY ──────────────────────────────────────────────
-function loadSummary() {
-  db.ref('months/' + curMonthId).once('value', snap => {
-    const data = snap.val() || {};
-    const holders = data.holders || {};
-    let totalAlloc = 0, totalExp = 0;
-    const el = document.getElementById('holder-summaries');
-    el.innerHTML = '';
-
-    Object.entries(holders).forEach(([hid, h]) => {
-      const expenses = h.expenses ? Object.values(h.expenses) : [];
-      const exp = expenses.reduce((s, e) => s + (parseFloat(e.amt) || 0), 0);
-      const rem = Math.max(0, (h.cash || 0) - exp);
-      const over = Math.max(0, exp - (h.cash || 0));
-      totalAlloc += parseFloat(h.cash || 0);
-      if (h.status === 'submitted' || h.status === 'approved') totalExp += exp;
-
-      const card = document.createElement('div');
-      card.className = 'summ-card';
-      let expRows = '';
-      if (expenses.length > 0) {
-        expRows = '<div class="exp-detail">' + expenses.map(e =>
-          `<div class="exp-row">
-            <div><div class="exp-row-desc">${esc(e.desc||'—')}</div>${e.project?`<div class="exp-row-proj">${esc(e.project)}</div>`:''}</div>
-            <div class="exp-row-amt">${parseFloat(e.amt||0).toFixed(3)}</div>
-          </div>`).join('') + '</div>';
-      }
-      card.innerHTML = `
-        <div class="summ-top">
-          <div><div class="summ-name">${esc(h.name)}</div><span class="pill ${h.status||'pending'}">${statusLabel(h.status)}</span></div>
-          <div class="summ-amt">${(h.status==='submitted'||h.status==='approved') ? exp.toFixed(3) : '—'}</div>
+        <div class="f2">
+          <div class="f"><label>Vendor *</label><input type="text" id="if-vendor" placeholder="Supplier / vendor name"></div>
+          <div class="f"><label>Category</label><input type="text" id="if-cat" placeholder="e.g. Materials, Transport"></div>
         </div>
-        <div class="summ-grid">
-          <div><div class="sg-lbl">${lang==='ar'?'المخصص':'Allocated'}</div><div class="sg-val">${parseFloat(h.cash||0).toFixed(3)}</div></div>
-          <div><div class="sg-lbl">${lang==='ar'?'المصروفات':'Expenses'}</div><div class="sg-val">${(h.status==='submitted'||h.status==='approved')?exp.toFixed(3):'—'}</div></div>
-          <div><div class="sg-lbl">${lang==='ar'?'المتبقي':'Remaining'}</div><div class="sg-val">${(h.status==='submitted'||h.status==='approved')?rem.toFixed(3):'—'}</div></div>
-        </div>${expRows}`;
-      el.appendChild(card);
-    });
-
-    const totalRem = Math.max(0, totalAlloc - totalExp);
-    const totalOver = Math.max(0, totalExp - totalAlloc);
-    document.getElementById('gt-alloc').textContent = totalAlloc.toFixed(3);
-    document.getElementById('gt-exp').textContent = totalExp.toFixed(3);
-    document.getElementById('gt-rem').textContent = totalRem.toFixed(3);
-    document.getElementById('gt-over').textContent = totalOver.toFixed(3);
-    document.getElementById('gt-rem').className = 'gt-val ' + (totalRem > 0 ? 'grn' : '');
-    document.getElementById('gt-over').className = 'gt-val ' + (totalOver > 0 ? 'red' : '');
-
-    loadYTD();
-  });
-}
-
-function loadYTD() {
-  db.ref('months').once('value', snap => {
-    const months = snap.val() || {};
-    let ytdAlloc = 0, ytdExp = 0;
-    const rows = [];
-    Object.entries(months).sort((a,b) => (a[1].meta?.month||'').localeCompare(b[1].meta?.month||'')).forEach(([id, m]) => {
-      const holders = m.holders || {};
-      let mAlloc = 0, mExp = 0;
-      Object.values(holders).forEach(h => {
-        mAlloc += parseFloat(h.cash || 0);
-        if (h.status === 'submitted' || h.status === 'approved') {
-          const expenses = h.expenses ? Object.values(h.expenses) : [];
-          mExp += expenses.reduce((s, e) => s + (parseFloat(e.amt) || 0), 0);
-        }
-      });
-      ytdAlloc += mAlloc; ytdExp += mExp;
-      rows.push({ label: `No.${m.meta?.pcno||'?'} ${fmtMonth(m.meta?.month)}`, alloc: mAlloc, exp: mExp, status: m.meta?.status });
-    });
-
-    const ytdEl = document.getElementById('ytd-section');
-    ytdEl.innerHTML = `
-      <div class="ytd-card">
-        <div class="ytd-title">${lang==='ar'?'ملخص السنة':'Year to Date Summary'}</div>
-        <div class="ytd-grid">
-          <div><div class="ytd-lbl">${lang==='ar'?'إجمالي المخصص':'Total Allocated'}</div><div class="ytd-val gold">${ytdAlloc.toFixed(3)}</div></div>
-          <div><div class="ytd-lbl">${lang==='ar'?'إجمالي المصروفات':'Total Expenses'}</div><div class="ytd-val">${ytdExp.toFixed(3)}</div></div>
-          <div><div class="ytd-lbl">${lang==='ar'?'إجمالي المتبقي':'Total Remaining'}</div><div class="ytd-val grn">${Math.max(0,ytdAlloc-ytdExp).toFixed(3)}</div></div>
+        <div class="f2">
+          <div class="f"><label>Project Name</label><input type="text" id="if-proj-name" placeholder="Optional"></div>
+          <div class="f"><label>Project Ref</label><input type="text" id="if-proj-ref" placeholder="Optional"></div>
         </div>
+        <div class="f2">
+          <div class="f"><label>Requested By</label><input type="text" id="if-req-by" placeholder="Free text"></div>
+          <div class="f"><label>Purchased By</label><select id="if-purch-by"></select></div>
+        </div>
+        <div class="f2">
+          <div class="f"><label>Entered By</label><input class="ro" type="text" id="if-entered-by" readonly></div>
+          <div class="f"><label>Notes</label><input type="text" id="if-notes" placeholder="Optional"></div>
+        </div>
+      </div>
+      <div class="inv-section">
+        <div class="inv-sec-title">Line Items</div>
+        <div class="tbl-wrap">
+          <table class="li-table">
+            <thead><tr><th style="width:40%">Description</th><th style="width:12%">Qty</th><th style="width:18%">Unit Price (KWD)</th><th style="width:18%">Line Total (KWD)</th><th style="width:8%"></th></tr></thead>
+            <tbody id="li-tbody"></tbody>
+          </table>
+        </div>
+        <div class="li-grand" id="li-grand">Grand Total: 0.000 KWD</div>
+        <div style="margin-top:12px;"><button class="btn out sm" onclick="addLineItem()">＋ Add Line</button></div>
+      </div>
+      <div class="btn-row" style="margin-top:0;">
+        <button class="btn out" onclick="nav('invoices')">Cancel</button>
+        <button class="btn pur" onclick="saveInvoice('Draft')">Save Draft</button>
+        <button class="btn gold" id="if-submit-btn" onclick="saveInvoice('Submitted')">Submit Invoice</button>
+      </div>
+    </div>
+
+    <!-- ── CASH ADVANCES ──────────────────────────────────────── -->
+    <div class="view" id="view-advances">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;">Cash Advances</div>
+        <button class="btn gold sm" id="adv-new-btn" onclick="openNewAdvance()">＋ New Advance</button>
+      </div>
+
+      <!-- New Advance inline form -->
+      <div id="adv-form-card" class="inv-section" style="display:none;margin-bottom:20px;">
+        <div class="inv-sec-title" id="adv-form-title">New Cash Advance</div>
+        <input type="hidden" id="af-id">
+        <div class="f2">
+          <div class="f"><label>Person *</label><select id="af-person"></select></div>
+          <div class="f"><label>Amount (KWD) *</label><input type="number" id="af-amount" step="0.001" min="0" placeholder="0.000"></div>
+        </div>
+        <div class="f2">
+          <div class="f"><label>Date *</label><input type="date" id="af-date"></div>
+          <div class="f"><label>Notes</label><input type="text" id="af-notes" placeholder="Optional"></div>
+        </div>
+        <div class="btn-row" style="margin-top:10px;">
+          <button class="btn out sm" onclick="closeAdvForm()">Cancel</button>
+          <button class="btn gold sm" onclick="saveAdvance()">Save Advance</button>
+        </div>
+      </div>
+
+      <div id="adv-grid" class="adv-grid"></div>
+      <div id="adv-empty" class="empty-state" style="display:none"><div class="empty-icon">💵</div><div class="empty-text">No advances yet</div><div class="empty-sub">Click "+ New Advance" to record one.</div></div>
+      <div id="adv-loading" class="loading"><div class="spinner"></div>Loading…</div>
+    </div>
+
+    <!-- ── REPORTS ────────────────────────────────────────────── -->
+    <div class="view" id="view-reports">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;">Reports</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn out sm" onclick="exportCSV()">↓ CSV</button>
+        </div>
+      </div>
+      <div class="report-grid">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Spending by Category</div></div>
+          <div style="padding:14px 16px;" id="rep-by-cat"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Spending by Purchaser</div></div>
+          <div style="padding:14px 16px;" id="rep-by-purchaser"></div>
+        </div>
+      </div>
+      <div class="report-grid">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Top Vendors</div></div>
+          <div style="padding:14px 16px;" id="rep-by-vendor"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Invoice Summary</div></div>
+          <div style="padding:14px 16px;" id="rep-summary"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ADMIN: PERIODS ─────────────────────────────────────── -->
+    <div class="view" id="view-admin-periods">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;">Periods</div>
+        <button class="btn gold sm" onclick="openPeriodModal()">＋ New Period</button>
       </div>
       <div class="card">
-        ${rows.map(r => `<div class="ytd-month-row">
-          <div><div style="font-weight:600;font-size:13px;">${r.label}</div><div style="font-size:11px;color:var(--muted)">${lang==='ar'?'مخصص':'Alloc'}: ${r.alloc.toFixed(3)} · ${lang==='ar'?'مصروف':'Exp'}: ${r.exp.toFixed(3)}</div></div>
-          <span class="pill ${r.status||'draft'}">${statusLabel(r.status)}</span>
-        </div>`).join('')}
-      </div>`;
-  });
-}
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Name</th><th>Starting Balance</th><th>Status</th><th>Created</th><th></th></tr></thead>
+          <tbody id="periods-tbody"></tbody></table>
+        </div>
+        <div id="periods-empty" class="empty-state" style="display:none"><div class="empty-icon">📅</div><div class="empty-text">No periods yet</div></div>
+      </div>
+    </div>
 
-// ── ADMIN APPROVE ──────────────────────────────────────────────
-function loadApprove() {
-  db.ref('months/' + curMonthId).once('value', snap => {
-    const data = snap.val() || {};
-    const holders = data.holders || {};
-    const approvals = data.approvals || {};
-    const meta = data.meta || {};
-
-    // Holder-level approvals
-    const el = document.getElementById('holder-approve-list');
-    el.innerHTML = '';
-    Object.entries(holders).forEach(([hid, h]) => {
-      const card = document.createElement('div');
-      card.className = 'hap-card';
-      const expenses = h.expenses ? Object.values(h.expenses) : [];
-      const exp = expenses.reduce((s, e) => s + (parseFloat(e.amt) || 0), 0);
-      card.innerHTML = `
-        <div class="hap-top">
-          <div>
-            <div class="hap-name">${esc(h.name)}</div>
-            <div style="font-size:12px;color:var(--muted)">${lang==='ar'?'مخصص':'Allocated'}: ${parseFloat(h.cash||0).toFixed(3)} · ${lang==='ar'?'مصروف':'Expenses'}: ${exp.toFixed(3)}</div>
+    <!-- ── ADMIN: USERS & PEOPLE ──────────────────────────────── -->
+    <div class="view" id="view-admin-users">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;margin-bottom:16px;">Users &amp; People</div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">App Users</div></div>
+          <div style="padding:14px 16px;"><div id="users-list"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title">Pre-registered People</div>
+            <button class="btn gold sm" onclick="openPersonModal()">＋ Add Person</button>
           </div>
-          <span class="pill ${h.status||'pending'}">${statusLabel(h.status)}</span>
+          <div style="padding:14px 16px;"><div id="people-list"></div></div>
         </div>
-        ${h.status === 'submitted' ? `
-          <input class="hap-comment-input" type="text" placeholder="${lang==='ar'?'تعليق (اختياري)':'Comment (optional)'}" id="hap-comment-${hid}"/>
-          <div class="hap-btns">
-            <button class="hap-btn app" onclick="approveHolder('${hid}','approved')">${lang==='ar'?'✓ موافقة':'✓ Approve'}</button>
-            <button class="hap-btn rej" onclick="approveHolder('${hid}','rejected')">${lang==='ar'?'✕ رفض':'✕ Reject'}</button>
-          </div>` :
-          h.status === 'rejected' ? `<div style="font-size:12px;color:var(--red);margin-top:4px;">${lang==='ar'?'ملاحظة الرفض:':'Rejection note:'} ${esc(h.rejectionNote||'')}</div>` :
-          h.status === 'approved' ? `<div style="font-size:12px;color:var(--green);margin-top:4px;">✓ ${lang==='ar'?'تمت الموافقة':'Approved'} ${h.approvedAt ? '· ' + fmtTs(h.approvedAt) : ''}</div>` :
-          `<div style="font-size:12px;color:var(--muted);margin-top:4px;">${lang==='ar'?'بانتظار إرسال المستلم':'Waiting for holder to submit'}</div>`
-        }`;
-      el.appendChild(card);
+      </div>
+    </div>
+
+    <!-- ── ADMIN: AUDIT TRAIL ─────────────────────────────────── -->
+    <div class="view" id="view-admin-audit">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;margin-bottom:16px;">Audit Trail</div>
+      <div class="card" style="padding:0 20px;">
+        <div id="audit-list" style="max-height:70vh;overflow-y:auto;padding:8px 0;"></div>
+        <div id="audit-loading" class="loading"><div class="spinner"></div>Loading…</div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ── FIREBASE ───────────────────────────────────────────────── -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   FIREBASE INIT
+═══════════════════════════════════════════════════════════════ */
+const FC = {
+  apiKey:            "AIzaSyCwSeV6ee9MEkUXGiCazr28bV9E0ddLbE0",
+  authDomain:        "royaleng-petty-cash.firebaseapp.com",
+  databaseURL:       "https://royaleng-petty-cash-default-rtdb.firebaseio.com",
+  projectId:         "royaleng-petty-cash",
+  storageBucket:     "royaleng-petty-cash.firebasestorage.app",
+  messagingSenderId: "701547062928",
+  appId:             "1:701547062928:web:78070c3b9d17b4c38eda15"
+};
+firebase.initializeApp(FC);
+const auth = firebase.auth();
+const db   = firebase.database();
+
+db.ref('.info/connected').on('value', snap => {
+  const on = snap.val() === true;
+  const d  = document.getElementById('cdot');
+  const l  = document.getElementById('clbl');
+  const b  = document.getElementById('offline-banner-main');
+  if (d) d.classList.toggle('on', on);
+  if (l) l.textContent = on ? 'Connected' : 'Offline';
+  if (b) b.style.display = on ? 'none' : 'block';
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════════ */
+let CU       = null;  // { uid, role, name, site }
+let periods  = [];
+let invoices = [];
+let advances = [];
+let people   = [];
+let users    = [];
+let auditLog = [];
+let activePeriodId = null;
+
+// Listeners to detach on sign-out
+const listeners = {};
+
+// Editing targets
+let editingInvoiceId = null;
+let editingPeriodId  = null;
+let editingPersonId  = null;
+let returnAdvanceId  = null;
+let commentInvoiceId = null;
+let cfmResFn         = null;
+
+/* ═══════════════════════════════════════════════════════════════
+   AUTH
+═══════════════════════════════════════════════════════════════ */
+// Known email → role/name/site mapping.
+// Adding a new user: create them in Firebase Auth, then add their email here
+// and redeploy — or create their /users/{uid} record manually in the DB console.
+const EMAIL_ROLES = {
+  'admin@royaleng-me.com':     { role: 'admin',   name: 'Josette', site: 'A' },
+  'hse.admin@royaleng-me.com': { role: 'entry',   name: 'Jubina',  site: 'B' },
+  'info@royaleng-me.com':      { role: 'manager', name: 'Manager', site: null }
+};
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    db.ref('users/' + user.uid).once('value', snap => {
+      const ur = snap.val();
+      if (!ur) {
+        // Auto-provision from known email mapping
+        const mapped = EMAIL_ROLES[user.email];
+        if (mapped) {
+          db.ref('users/' + user.uid)
+            .set({ ...mapped, email: user.email })
+            .then(() => bootApp(user, mapped));
+        } else {
+          auth.signOut();
+          showLoginErr('No account found for this email. Contact admin.');
+        }
+      } else {
+        bootApp(user, ur);
+      }
     });
+  } else {
+    showLogin();
+  }
+});
 
-    // Final approvers
-    const fas = document.getElementById('final-approve-section');
-    fas.innerHTML = '';
-    [{ key: 'ap1', name: meta.ap1Name, role: lang==='ar'?'مراجعة من':'Checked by' },
-     { key: 'ap2', name: meta.ap2Name, role: lang==='ar'?'اعتماد من':'Approved by' }].forEach(ap => {
-      const a = approvals[ap.key] || {};
-      const card = document.createElement('div');
-      card.className = 'ap-card';
-      const sel1 = a.status === 'approved' ? 'sel' : '';
-      const sel2 = a.status === 'rejected' ? 'sel' : '';
-      card.innerHTML = `
-        <div class="ap-hdr">
-          <div><div class="ap-name">${esc(ap.name || ap.role)}</div><div class="ap-role">${ap.role}</div></div>
-          ${a.status ? `<span class="pill ${a.status==='approved'?'ok':'rejected'}">${a.status==='approved'?(lang==='ar'?'موافق':'Approved'):(lang==='ar'?'مرفوض':'Rejected')}</span>` : ''}
-        </div>
-        <input class="ap-comment" type="text" placeholder="${lang==='ar'?'تعليق (اختياري)':'Comments (optional)'}" value="${esc(a.comment||'')}" id="ap-input-${ap.key}"/>
-        <div class="ap-btns">
-          <button class="ap-btn app ${sel1}" onclick="setApproval('${ap.key}',this)">${lang==='ar'?'✓ موافقة':'✓ Approve'}</button>
-          <button class="ap-btn rej ${sel2}" onclick="setApproval('${ap.key}',this,true)">${lang==='ar'?'✕ رفض':'✕ Reject'}</button>
-        </div>
-        ${a.timestamp ? `<div class="ap-ts">${lang==='ar'?'بتاريخ':'At'}: ${fmtTs(a.timestamp)}</div>` : ''}`;
-      fas.appendChild(card);
-    });
-  });
+function bootApp(user, ur) {
+  ur = ur || {};
+  CU = { uid: user.uid, role: ur.role || 'admin', name: ur.name || user.email, site: ur.site || null, email: user.email };
+  showApp();
+  subscribeData();
 }
 
-async function approveHolder(hid, status) {
-  const comment = document.getElementById('hap-comment-' + hid)?.value || '';
-  const update = { status, approvedAt: new Date().toISOString() };
-  if (status === 'rejected') update.rejectionNote = comment;
-  await db.ref('months/' + curMonthId + '/holders/' + hid).update(update);
-  logAudit('HOLDER_' + status.toUpperCase(), `${curUser.name} ${status} holder ${hid}. Note: ${comment}`);
-  showToast(status === 'approved' ? (lang==='ar'?'✓ تمت الموافقة':'✓ Approved') : (lang==='ar'?'✕ تم الرفض':'✕ Rejected'), status === 'approved' ? 'ok' : 'err');
-  loadApprove();
-}
+/* ── LOGIN ────────────────────────────────────────────────────── */
+document.getElementById('l-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
-async function setApproval(key, btn, isReject = false) {
-  const status = isReject ? 'rejected' : 'approved';
-  const comment = document.getElementById('ap-input-' + key)?.value || '';
-  await db.ref('months/' + curMonthId + '/approvals/' + key).set({ status, comment, timestamp: new Date().toISOString(), by: curUser.name });
-  logAudit('FINAL_' + status.toUpperCase(), `${curUser.name} final ${status} as ${key}`);
-  loadApprove();
-  showToast(status === 'approved' ? (lang==='ar'?'✓ تم الاعتماد':'✓ Signed off') : (lang==='ar'?'✕ تم الرفض':'✕ Rejected'), status === 'approved' ? 'ok' : 'err');
-}
-
-// ── AUDIT LOG ──────────────────────────────────────────────────
-function loadAuditLog() {
-  db.ref('audit/' + curMonthId).once('value', snap => {
-    const logs = snap.val() || {};
-    const el = document.getElementById('audit-list');
-    const entries = Object.values(logs).sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
-    if (entries.length === 0) {
-      el.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:20px;">${lang==='ar'?'لا توجد سجلات بعد':'No audit entries yet'}</div>`;
-      return;
-    }
-    el.innerHTML = entries.map(e => `
-      <div class="audit-row">
-        <div class="audit-ts">${fmtTs(e.timestamp)}</div>
-        <div class="audit-user">${esc(e.user||'—')}</div>
-        <div class="audit-action">${esc(e.action)} ${e.detail ? '· ' + esc(e.detail) : ''}</div>
-      </div>`).join('');
-  });
-}
-
-// ── ADMIN TABS ─────────────────────────────────────────────────
-function switchTab(tab) {
-  ['setup','summary','approve','audit'].forEach(t => {
-    document.getElementById('tab-' + t).style.display = t === tab ? 'block' : 'none';
-    document.getElementById('atab-' + t).classList.toggle('on', t === tab);
-  });
-  if (tab === 'summary') loadSummary();
-  if (tab === 'approve') loadApprove();
-  if (tab === 'audit') loadAuditLog();
-}
-
-// ── WHATSAPP ───────────────────────────────────────────────────
-function sendWhatsApp() {
-  const pcno = document.getElementById('a-pcno').value || curMonthData?.meta?.pcno || '—';
-  const month = fmtMonth(document.getElementById('a-month').value || curMonthData?.meta?.month);
-  const url = window.location.href.split('?')[0];
-  // FIX: Use %0A for WhatsApp-compatible newlines
-  const lines = [
-    '🏢 Royal Eng — Petty Cash',
-    `No. ${pcno} · ${month}`,
-    '',
-    lang==='ar' ? 'يرجى إدخال مصروفاتك:' : 'Please submit your expenses:',
-    url,
-    '',
-    lang==='ar' ? 'تواصل مع المدير للحصول على رمزك.' : 'Contact admin for your PIN.'
-  ];
-  window.open('https://wa.me/?text=' + lines.map(encodeURIComponent).join('%0A'), '_blank');
-}
-
-// ── EXPORT EXCEL ───────────────────────────────────────────────
-function exportExcel() {
-  db.ref('months/' + curMonthId).once('value', snap => {
-    const data = snap.val() || {};
-    const meta = data.meta || {};
-    const holders = data.holders || {};
-    const wb = XLSX.utils.book_new();
-
-    // Summary sheet
-    const sumRows = [['Royal Eng — Petty Cash Liquidation', '', '', ''], ['Petty Cash No.', meta.pcno||'', 'Month', fmtMonth(meta.month)], ['Status', statusLabel(meta.status), '', ''], ['']];
-    sumRows.push(['Holder', 'Cash Allocated', 'Total Expenses', 'Remaining', 'Over Spent', 'Status']);
-    let totalAlloc = 0, totalExp = 0;
-    Object.values(holders).forEach(h => {
-      const expenses = h.expenses ? Object.values(h.expenses) : [];
-      const exp = expenses.reduce((s, e) => s + (parseFloat(e.amt) || 0), 0);
-      const rem = Math.max(0, (h.cash||0) - exp);
-      const over = Math.max(0, exp - (h.cash||0));
-      totalAlloc += parseFloat(h.cash||0);
-      if (h.status === 'submitted' || h.status === 'approved') totalExp += exp;
-      sumRows.push([h.name, parseFloat(h.cash||0).toFixed(3), exp.toFixed(3), rem.toFixed(3), over.toFixed(3), statusLabel(h.status)]);
-    });
-    sumRows.push(['', '', '', '', '']);
-    sumRows.push(['TOTAL', totalAlloc.toFixed(3), totalExp.toFixed(3), Math.max(0,totalAlloc-totalExp).toFixed(3), Math.max(0,totalExp-totalAlloc).toFixed(3), '']);
-    const ws1 = XLSX.utils.aoa_to_sheet(sumRows);
-    XLSX.utils.book_append_sheet(wb, ws1, 'Summary');
-
-    // Per-holder sheets
-    Object.values(holders).forEach(h => {
-      const expenses = h.expenses ? Object.values(h.expenses) : [];
-      const rows = [['Royal Eng — Petty Cash Liquidation Form'], ['Holder', h.name, 'Cash Allocated', parseFloat(h.cash||0).toFixed(3)], ['Petty Cash No.', meta.pcno||'', 'Month', fmtMonth(meta.month)], [''],
-        ['S.N.','Description','Amount (KWD)','Date','Invoice No.','Requested By','Project','Reference No.']];
-      expenses.forEach((e, i) => {
-        rows.push([i+1, e.desc||'', parseFloat(e.amt||0).toFixed(3), e.date||'', e.invoiceNo||'', e.requestedBy||'', e.project||'', e.refNo||'']);
-      });
-      const exp = expenses.reduce((s, e) => s + (parseFloat(e.amt)||0), 0);
-      rows.push(['','','','','','','','']);
-      rows.push(['','Total Cash for Liquidation', parseFloat(h.cash||0).toFixed(3)]);
-      rows.push(['','Total Expenses', exp.toFixed(3)]);
-      rows.push(['','Total Remaining Cash', Math.max(0,(h.cash||0)-exp).toFixed(3)]);
-      rows.push(['','Over Expense', Math.max(0,exp-(h.cash||0)).toFixed(3)]);
-      rows.push(['','','']);
-      rows.push(['','Requested by:', h.name]);
-      rows.push(['','Checked by:', meta.ap1Name||'']);
-      rows.push(['','Approved by:', meta.ap2Name||'']);
-      const ws = XLSX.utils.aoa_to_sheet(rows);
-      XLSX.utils.book_append_sheet(wb, ws, h.name.substring(0,30));
-    });
-
-    XLSX.writeFile(wb, `RoyalEng_PettyCash_No${meta.pcno}_${meta.month}.xlsx`);
-    logAudit('EXPORT_EXCEL', curUser.name + ' exported Excel');
-  });
-}
-
-// ── EXPORT PDF ─────────────────────────────────────────────────
-function exportPDF() {
-  db.ref('months/' + curMonthId).once('value', snap => {
-    const data = snap.val() || {};
-    const meta = data.meta || {};
-    const holders = data.holders || {};
-    let html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
-    <style>
-      body{font-family:Arial,sans-serif;font-size:10pt;margin:20mm;}
-      h1{font-size:14pt;text-align:center;margin-bottom:4px;}
-      .sub{text-align:center;font-size:10pt;margin-bottom:16px;color:#555;}
-      .meta-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
-      .meta-item label{font-size:8pt;color:#888;display:block;text-transform:uppercase;}
-      .meta-item span{font-size:11pt;font-weight:bold;}
-      table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:9pt;}
-      th{background:#3B038A;color:white;padding:6px 8px;text-align:left;font-size:8pt;}
-      td{padding:5px 8px;border-bottom:1px solid #E5E7EB;}
-      tr:nth-child(even) td{background:#F9F8FF;}
-      .totals-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:12px 0;background:#3B038A;padding:12px;border-radius:6px;color:white;}
-      .total-item label{font-size:7pt;opacity:0.7;display:block;text-transform:uppercase;}
-      .total-item span{font-size:13pt;font-weight:bold;}
-      .signatures{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:24px;}
-      .sig-box{border-top:2px solid #3B038A;padding-top:8px;}
-      .sig-box label{font-size:8pt;color:#888;display:block;}
-      .sig-box span{font-size:10pt;font-weight:bold;}
-      .page-break{page-break-after:always;}
-      @media print{.page-break{page-break-after:always;}}
-    </style></head><body>`;
-
-    Object.values(holders).forEach((h, idx) => {
-      const expenses = h.expenses ? Object.values(h.expenses) : [];
-      const exp = expenses.reduce((s, e) => s + (parseFloat(e.amt)||0), 0);
-      const rem = Math.max(0, (h.cash||0) - exp);
-      const over = Math.max(0, exp - (h.cash||0));
-      if (idx > 0) html += '<div class="page-break"></div>';
-      html += `
-        <h1>PETTY CASH LIQUIDATION FORM</h1>
-        <div class="sub">Royal Engineering Company · ${lang==='ar'?'شركة رويال للهندسة':''}</div>
-        <div class="meta-grid">
-          <div class="meta-item"><label>Petty Cash No.</label><span>${meta.pcno||'—'}</span></div>
-          <div class="meta-item"><label>Holder</label><span>${h.name}</span></div>
-          <div class="meta-item"><label>Month</label><span>${fmtMonth(meta.month)}</span></div>
-        </div>
-        <table>
-          <thead><tr><th>S.N.</th><th>Description</th><th>Date</th><th>Invoice No.</th><th>Requested By</th><th>Project</th><th style="text-align:right">Amount (KWD)</th></tr></thead>
-          <tbody>
-            ${expenses.map((e,i)=>`<tr><td>${i+1}</td><td>${e.desc||''}</td><td>${e.date||''}</td><td>${e.invoiceNo||''}</td><td>${e.requestedBy||''}</td><td>${e.project||''}</td><td style="text-align:right;font-weight:bold">${parseFloat(e.amt||0).toFixed(3)}</td></tr>`).join('')}
-          </tbody>
-        </table>
-        <div class="totals-grid">
-          <div class="total-item"><label>Cash for Liquidation</label><span>${parseFloat(h.cash||0).toFixed(3)}</span></div>
-          <div class="total-item"><label>Total Expenses</label><span>${exp.toFixed(3)}</span></div>
-          <div class="total-item"><label>Remaining Cash</label><span>${rem.toFixed(3)}</span></div>
-          <div class="total-item"><label>Over Expense</label><span>${over.toFixed(3)}</span></div>
-        </div>
-        <div class="signatures">
-          <div class="sig-box"><label>Requested by</label><span>${h.name}</span><div style="height:32px;border-bottom:1px solid #ccc;margin-top:16px;"></div></div>
-          <div class="sig-box"><label>Checked by</label><span>${meta.ap1Name||''}</span><div style="height:32px;border-bottom:1px solid #ccc;margin-top:16px;"></div></div>
-          <div class="sig-box"><label>Approved by</label><span>${meta.ap2Name||''}</span><div style="height:32px;border-bottom:1px solid #ccc;margin-top:16px;"></div></div>
-        </div>`;
-    });
-
-    html += '</body></html>';
-    // FIX: Use hidden iframe to avoid popup blockers
-    let iframe = document.getElementById('_pdf_frame');
-    if (!iframe) {
-      iframe = document.createElement('iframe');
-      iframe.id = '_pdf_frame';
-      iframe.style.cssText = 'position:fixed;width:0;height:0;border:none;opacity:0;pointer-events:none;';
-      document.body.appendChild(iframe);
-    }
-    iframe.srcdoc = html;
-    iframe.onload = () => {
-      try { iframe.contentWindow.focus(); iframe.contentWindow.print(); }
-      catch(e) { showToast('⚠ ' + e.message, 'err'); }
-    };
-    logAudit('EXPORT_PDF', curUser.name + ' exported PDF');
-  });
-}
-
-// ── HELPERS ────────────────────────────────────────────────────
-function fmtMonth(m) {
-  if (!m) return '—';
+async function doLogin() {
+  const email = document.getElementById('l-email').value.trim();
+  const pass  = document.getElementById('l-pass').value;
+  const btn   = document.getElementById('l-btn');
+  showLoginErr('');
+  if (!email || !pass) { showLoginErr('Email and password are required.'); return; }
+  btn.disabled = true; btn.textContent = 'Signing in…';
   try {
-    const d = new Date(m + '-01');
-    return d.toLocaleDateString(lang === 'ar' ? 'ar-KW' : 'en-GB', { month: 'long', year: 'numeric' });
-  } catch { return m; }
+    await auth.signInWithEmailAndPassword(email, pass);
+  } catch (e) {
+    const msgs = { 'auth/user-not-found':'No account with that email.', 'auth/wrong-password':'Incorrect password.', 'auth/invalid-email':'Invalid email address.', 'auth/too-many-requests':'Too many attempts. Try again later.' };
+    showLoginErr(msgs[e.code] || 'Sign-in failed. Check your credentials.');
+    btn.disabled = false; btn.textContent = 'Sign In →';
+  }
 }
 
-function fmtTs(ts) {
-  if (!ts) return '—';
-  try {
-    return new Date(ts).toLocaleString(lang === 'ar' ? 'ar-KW' : 'en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
-  } catch { return ts; }
+function showLoginErr(msg) { document.getElementById('l-err').textContent = msg; }
+function showLogin() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('sidebar').style.display = 'none';
+  document.getElementById('main-app').style.display = 'none';
+}
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('sidebar').style.display = 'flex';
+  document.getElementById('main-app').style.display = 'flex';
+  document.getElementById('tb-user').textContent  = CU.name;
+  document.getElementById('tb-role').textContent  = CU.role;
+  document.getElementById('tb-role').className    = 'role-badge ' + CU.role;
+  document.querySelectorAll('.admin-only').forEach(el => el.style.display = CU.role === 'admin' ? '' : 'none');
+  document.getElementById('inv-new-btn').style.display  = CU.role === 'manager' ? 'none' : '';
+  document.getElementById('adv-new-btn').style.display  = CU.role === 'manager' ? 'none' : '';
+  nav('dashboard');
 }
 
-function statusLabel(s) {
-  const labels = {
-    draft: lang==='ar'?'مسودة':'Draft',
-    active: lang==='ar'?'نشط':'Active',
-    submitted: lang==='ar'?'مُرسل':'Submitted',
-    rejected: lang==='ar'?'مرفوض':'Rejected',
-    approved: lang==='ar'?'موافق':'Approved',
-    closed: lang==='ar'?'مغلق':'Closed',
-    pending: lang==='ar'?'بانتظار':'Pending'
+async function doSignOut() {
+  detachListeners();
+  periods=[]; invoices=[]; advances=[]; people=[]; users=[]; auditLog=[];
+  activePeriodId=null; CU=null;
+  await auth.signOut();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DATA SUBSCRIPTIONS
+═══════════════════════════════════════════════════════════════ */
+function subscribeData() {
+  const on = (path, cb) => {
+    const ref = db.ref(path);
+    const fn  = snap => cb(snap);
+    ref.on('value', fn);
+    listeners[path] = { ref, fn };
   };
-  return labels[s] || s || (lang==='ar'?'بانتظار':'Pending');
+
+  on('periods', snap => {
+    periods = toArr(snap.val());
+    const active = periods.find(p => p.status === 'Active');
+    activePeriodId = active ? active.id : null;
+    updatePeriodPill();
+    renderPeriods();
+    refreshBalance();
+    renderDashboard();
+    renderReports();
+  });
+
+  on('invoices', snap => {
+    invoices = toArr(snap.val());
+    document.getElementById('inv-loading').style.display = 'none';
+    renderInvoices();
+    refreshBalance();
+    renderDashboard();
+    renderReports();
+    refreshAdvanceStatuses();
+  });
+
+  on('advances', snap => {
+    advances = toArr(snap.val());
+    document.getElementById('adv-loading').style.display = 'none';
+    renderAdvances();
+    refreshBalance();
+    renderDashboard();
+  });
+
+  on('people', snap => {
+    people = toArr(snap.val()).filter(p => p.active !== false);
+    populatePurchaserDropdowns();
+    renderPeopleList();
+  });
+
+  on('users', snap => {
+    users = toArr(snap.val());
+    renderUsersList();
+  });
+
+  on('auditLog', snap => {
+    auditLog = toArr(snap.val()).sort((a,b) => (b.timestamp||0)-(a.timestamp||0));
+    document.getElementById('audit-loading').style.display = 'none';
+    renderAudit();
+  });
 }
 
-// ── INIT ───────────────────────────────────────────────────────
-loadWhoPage();
+function detachListeners() {
+  Object.values(listeners).forEach(({ ref, fn }) => ref.off('value', fn));
+  Object.keys(listeners).forEach(k => delete listeners[k]);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════════════════ */
+const VIEW_TITLES = {
+  dashboard:'Dashboard', invoices:'Invoices', 'invoice-form':'Invoice',
+  advances:'Cash Advances', reports:'Reports',
+  'admin-periods':'Periods', 'admin-users':'Users & People', 'admin-audit':'Audit Trail'
+};
+
+function nav(viewName) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === viewName));
+  const el = document.getElementById('view-' + viewName);
+  if (el) el.classList.add('active');
+  document.getElementById('tb-title').textContent = VIEW_TITLES[viewName] || viewName;
+  if (viewName === 'invoice-form') {
+    resetInvoiceForm();
+    editingInvoiceId = null;
+    document.getElementById('inv-form-title').textContent = 'New Invoice';
+  }
+  if (viewName === 'reports') renderReports();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PERIOD PILL & BALANCE STRIP
+═══════════════════════════════════════════════════════════════ */
+function updatePeriodPill() {
+  const pill = document.getElementById('period-pill');
+  const active = periods.find(p => p.status === 'Active');
+  if (active) {
+    pill.textContent = active.name;
+    pill.className   = 'period-pill active';
+    pill.style.display = '';
+  } else {
+    pill.style.display = 'none';
+  }
+}
+
+function refreshBalance() {
+  const ap = periods.find(p => p.id === activePeriodId);
+  const start = ap ? parseFloat(ap.startingBalance || 0) : 0;
+  const periodInvs = invoices.filter(i => i.periodId === activePeriodId && i.status === 'Submitted');
+  const periodAdvs = advances.filter(a => a.periodId === activePeriodId && a.status === 'Open');
+  const totalInv = periodInvs.reduce((s, i) => s + (parseFloat(i.grandTotal)||0), 0);
+  const totalAdv = periodAdvs.reduce((s, a) => s + (parseFloat(a.amount)||0), 0);
+  const rem = start - totalInv - totalAdv;
+
+  set('bs-start', fmt(start), 'gold');
+  set('bs-inv',   fmt(totalInv));
+  set('bs-adv',   fmt(totalAdv));
+  setRem('bs-rem', rem);
+
+  function set(id, val, cls) {
+    const el = document.getElementById(id);
+    el.textContent = val;
+    if (cls) el.className = 'bs-val ' + cls;
+  }
+  function setRem(id, val) {
+    const el = document.getElementById(id);
+    el.textContent = fmt(val);
+    el.className   = 'bs-val ' + (val < 0 ? 'red' : 'green');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════════════════════════════ */
+function renderDashboard() {
+  const pid = activePeriodId;
+  const pInvs = invoices.filter(i => i.periodId === pid);
+  const pAdvs = advances.filter(a => a.periodId === pid && a.status === 'Open');
+  const totInv = pInvs.reduce((s, i) => s + (parseFloat(i.grandTotal)||0), 0);
+  const totAdv = pAdvs.reduce((s, a) => s + (parseFloat(a.amount)||0), 0);
+
+  document.getElementById('ds-inv').textContent       = fmt(totInv);
+  document.getElementById('ds-adv').textContent       = fmt(totAdv);
+  document.getElementById('ds-inv-count').textContent = pInvs.length;
+  document.getElementById('ds-adv-count').textContent = advances.filter(a => a.periodId === pid).length;
+
+  // Recent invoices (last 6)
+  const recent = [...pInvs].sort((a,b) => (b.createdAt||0)-(a.createdAt||0)).slice(0,6);
+  const tb = document.getElementById('ds-inv-tbody');
+  tb.innerHTML = recent.length ? recent.map(i => `
+    <tr>
+      <td class="td-bold">${esc(i.invoiceNo)}</td>
+      <td>${esc(i.vendor)}</td>
+      <td><span class="pill ${i.status.toLowerCase()}">${i.status}</span></td>
+      <td style="text-align:right" class="td-amt">${fmt(i.grandTotal)}</td>
+    </tr>`).join('') : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted)">No invoices this period</td></tr>';
+
+  // Open advance mini-cards
+  const advList = document.getElementById('ds-adv-list');
+  const openAdvs = pAdvs.slice(0,4);
+  advList.innerHTML = openAdvs.length ? openAdvs.map(a => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:.5px solid var(--border2);font-size:13px;">
+      <div><div style="font-weight:700;">${esc(a.personName)}</div><div style="font-size:11px;color:var(--muted);">Advance</div></div>
+      <div class="td-amt">${fmt(a.amount)}</div>
+    </div>`).join('') : '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">No open advances</div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INVOICES LIST
+═══════════════════════════════════════════════════════════════ */
+function populatePurchaserDropdowns() {
+  const myPeople = CU.role === 'entry' ? people.filter(p => p.site === 'B') : people;
+  ['inv-f-purchaser','if-purch-by','af-person'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const prev = el.value;
+    const isFilter = id === 'inv-f-purchaser';
+    el.innerHTML = (isFilter ? '<option value="">All purchasers</option>' : '') +
+      myPeople.map(p => `<option value="${esc(p.id)}">${esc(p.name)} (Site ${p.site})</option>`).join('');
+    if (prev) el.value = prev;
+  });
+  const catEl = document.getElementById('inv-f-cat');
+  if (catEl) {
+    const cats = [...new Set(invoices.map(i => i.category).filter(Boolean))].sort();
+    catEl.innerHTML = '<option value="">All categories</option>' + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  }
+}
+
+function renderInvoices() {
+  const pid     = activePeriodId;
+  const search  = (document.getElementById('inv-search').value || '').toLowerCase();
+  const fPurch  = document.getElementById('inv-f-purchaser').value;
+  const fStatus = document.getElementById('inv-f-status').value;
+  const fCat    = document.getElementById('inv-f-cat').value;
+
+  let list = invoices.filter(i => {
+    if (i.periodId !== pid) return false;
+    if (fPurch  && i.purchasedByPersonId !== fPurch)  return false;
+    if (fStatus && i.status !== fStatus)               return false;
+    if (fCat    && i.category !== fCat)                return false;
+    if (search) {
+      const hay = [i.invoiceNo, i.vendor, i.category, i.requestedBy, i.purchasedByName, i.projectName, i.projectRef].join(' ').toLowerCase();
+      if (!hay.includes(search)) return false;
+    }
+    if (CU.role === 'entry' && CU.site) {
+      if (i.site && i.site !== CU.site) return false;
+    }
+    return true;
+  }).sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
+
+  const tbody = document.getElementById('inv-tbody');
+  const empty = document.getElementById('inv-empty');
+
+  if (!list.length) { tbody.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = list.map(inv => {
+    const proj = [inv.projectName, inv.projectRef].filter(Boolean).join(' · ');
+    const canEdit = CU.role === 'admin' || (CU.role === 'entry' && inv.status === 'Draft' && inv.enteredByUid === CU.uid);
+    const hasComments = inv._commentCount > 0;
+    return `<tr>
+      <td class="td-bold">${esc(inv.invoiceNo)}${inv.adminEdited ? ' <span style="font-size:10px;color:var(--amber);">✎ edited</span>' : ''}</td>
+      <td><div class="td-bold">${esc(inv.vendor)}</div>${proj ? `<div class="td-sub">${esc(proj)}</div>` : ''}</td>
+      <td class="td-muted">${esc(inv.requestedBy||'—')}</td>
+      <td>${esc(inv.purchasedByName||'—')}</td>
+      <td class="td-muted">${esc(inv.enteredByName||'—')}</td>
+      <td style="text-align:right" class="td-amt">${fmt(inv.grandTotal)}</td>
+      <td><span class="pill ${inv.status.toLowerCase()}">${inv.status}</span>${hasComments ? ` <span class="comment-chip">💬 ${inv._commentCount}</span>` : ''}</td>
+      <td>
+        <div class="row-acts">
+          <button class="ib" title="View" onclick="viewInvoice('${inv.id}')">👁</button>
+          ${canEdit ? `<button class="ib" title="Edit" onclick="editInvoice('${inv.id}')">✏</button>` : ''}
+          ${CU.role === 'admin' ? `<button class="ib del" title="Delete" onclick="deleteInvoice('${inv.id}')">✕</button>` : ''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INVOICE FORM
+═══════════════════════════════════════════════════════════════ */
+function resetInvoiceForm() {
+  document.getElementById('if-id').value         = '';
+  document.getElementById('if-no').value         = '';
+  document.getElementById('if-date').value       = today();
+  document.getElementById('if-status').value     = 'Draft';
+  document.getElementById('if-vendor').value     = '';
+  document.getElementById('if-cat').value        = '';
+  document.getElementById('if-proj-name').value  = '';
+  document.getElementById('if-proj-ref').value   = '';
+  document.getElementById('if-req-by').value     = '';
+  document.getElementById('if-purch-by').value   = '';
+  document.getElementById('if-entered-by').value = CU.name;
+  document.getElementById('if-notes').value      = '';
+  document.getElementById('li-tbody').innerHTML  = '';
+  document.getElementById('li-grand').textContent = 'Grand Total: 0.000 KWD';
+  addLineItem();
+  if (CU.role !== 'admin') {
+    document.getElementById('if-status').value = 'Draft';
+  }
+}
+
+function addLineItem(desc='', qty='', up='', lt='') {
+  const tbody = document.getElementById('li-tbody');
+  const idx   = tbody.rows.length;
+  const tr    = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" placeholder="Description" value="${esc(desc)}" onchange="recalcLines()"></td>
+    <td><input type="number" placeholder="1" min="0" step="any" value="${qty}" oninput="recalcLines()" style="text-align:right"></td>
+    <td><input type="number" placeholder="0.000" min="0" step="0.001" value="${up}" oninput="recalcLines()" style="text-align:right"></td>
+    <td><input class="ro" type="text" value="${lt}" readonly tabindex="-1"></td>
+    <td style="text-align:center"><button class="ib del" title="Remove" onclick="this.closest('tr').remove();recalcLines()">✕</button></td>`;
+  tbody.appendChild(tr);
+}
+
+function recalcLines() {
+  let grand = 0;
+  document.querySelectorAll('#li-tbody tr').forEach(tr => {
+    const cells = tr.querySelectorAll('input');
+    const qty   = parseFloat(cells[1].value) || 0;
+    const up    = parseFloat(cells[2].value) || 0;
+    const lt    = qty * up;
+    cells[3].value = fmt(lt);
+    grand += lt;
+  });
+  document.getElementById('li-grand').textContent = 'Grand Total: ' + fmt(grand) + ' KWD';
+}
+
+function editInvoice(id) {
+  const inv = invoices.find(i => i.id === id);
+  if (!inv) return;
+  editingInvoiceId = id;
+  nav('invoice-form');
+  document.getElementById('inv-form-title').textContent = 'Edit Invoice';
+  document.getElementById('if-id').value         = id;
+  document.getElementById('if-no').value         = inv.invoiceNo || '';
+  document.getElementById('if-date').value       = inv.date || '';
+  document.getElementById('if-status').value     = inv.status || 'Draft';
+  document.getElementById('if-vendor').value     = inv.vendor || '';
+  document.getElementById('if-cat').value        = inv.category || '';
+  document.getElementById('if-proj-name').value  = inv.projectName || '';
+  document.getElementById('if-proj-ref').value   = inv.projectRef || '';
+  document.getElementById('if-req-by').value     = inv.requestedBy || '';
+  document.getElementById('if-entered-by').value = inv.enteredByName || CU.name;
+  document.getElementById('if-notes').value      = inv.notes || '';
+
+  // Purchased by
+  setTimeout(() => {
+    const sel = document.getElementById('if-purch-by');
+    if (inv.purchasedByPersonId) sel.value = inv.purchasedByPersonId;
+  }, 50);
+
+  // Line items
+  const tbody = document.getElementById('li-tbody');
+  tbody.innerHTML = '';
+  const items = inv.lineItems || {};
+  const arr   = Array.isArray(items) ? items : Object.values(items);
+  arr.forEach(li => addLineItem(li.description, li.qty, li.unitPrice, li.lineTotal));
+  if (!arr.length) addLineItem();
+  recalcLines();
+}
+
+async function saveInvoice(status) {
+  const id       = document.getElementById('if-id').value;
+  const invNo    = document.getElementById('if-no').value.trim();
+  const date     = document.getElementById('if-date').value;
+  const vendor   = document.getElementById('if-vendor').value.trim();
+  const cat      = document.getElementById('if-cat').value.trim();
+  const projName = document.getElementById('if-proj-name').value.trim();
+  const projRef  = document.getElementById('if-proj-ref').value.trim();
+  const reqBy    = document.getElementById('if-req-by').value.trim();
+  const purchSel = document.getElementById('if-purch-by');
+  const purchId  = purchSel.value;
+  const purchName = purchId ? (purchSel.options[purchSel.selectedIndex]?.text || '') : '';
+  const notes    = document.getElementById('if-notes').value.trim();
+
+  if (!invNo)  { toast('Invoice number is required.', 'err'); return; }
+  if (!vendor) { toast('Vendor is required.', 'err'); return; }
+  if (!date)   { toast('Date is required.', 'err'); return; }
+  if (!activePeriodId) { toast('No active period. Create one in Admin → Periods.', 'err'); return; }
+
+  // Collect line items
+  const rows = document.querySelectorAll('#li-tbody tr');
+  const lineItems = [];
+  for (const tr of rows) {
+    const cells = tr.querySelectorAll('input');
+    const desc  = cells[0].value.trim();
+    const qty   = parseFloat(cells[1].value) || 0;
+    const up    = parseFloat(cells[2].value) || 0;
+    if (!desc && !qty && !up) continue;
+    lineItems.push({ description: desc, qty, unitPrice: up, lineTotal: parseFloat(fmt(qty*up)) });
+  }
+  if (status === 'Submitted' && !lineItems.length) { toast('Add at least one line item before submitting.', 'err'); return; }
+  if (status === 'Submitted' && lineItems.some(li => li.lineTotal <= 0)) { toast('All line totals must be positive.', 'err'); return; }
+
+  const grandTotal = parseFloat(fmt(lineItems.reduce((s, li) => s + li.lineTotal, 0)));
+
+  // Unique invoice no per period check
+  const dup = invoices.find(i => i.periodId === activePeriodId && i.invoiceNo === invNo && i.id !== id);
+  if (dup) { toast('Invoice number already exists in this period.', 'err'); return; }
+
+  const personSite = purchId ? (people.find(p => p.id === purchId)?.site || null) : null;
+
+  const data = {
+    periodId: activePeriodId,
+    invoiceNo: invNo, date, vendor,
+    category: cat, projectName: projName, projectRef: projRef,
+    requestedBy: reqBy, purchasedByPersonId: purchId, purchasedByName: purchName,
+    enteredByUid: CU.uid, enteredByName: CU.name,
+    lineItems, grandTotal, notes, status,
+    site: personSite || CU.site || null,
+    updatedAt: Date.now()
+  };
+
+  const isEdit = Boolean(id);
+  const wasSubmitted = isEdit && (invoices.find(i => i.id === id)?.status === 'Submitted');
+  if (isEdit && wasSubmitted && CU.role === 'admin') data.adminEdited = true;
+
+  try {
+    if (isEdit) {
+      await db.ref('invoices/' + id).update(data);
+      audit('INVOICE_UPDATED', id, 'invoice', { status });
+    } else {
+      data.createdAt = Date.now();
+      const ref = await db.ref('invoices').push(data);
+      audit('INVOICE_CREATED', ref.key, 'invoice', { status });
+    }
+    toast(status === 'Submitted' ? 'Invoice submitted.' : 'Draft saved.', 'ok');
+    nav('invoices');
+  } catch (e) {
+    toast('Error saving invoice. Check permissions.', 'err');
+    console.error(e);
+  }
+}
+
+async function deleteInvoice(id) {
+  if (!await cfm('Delete Invoice', 'Permanently delete this invoice? This cannot be undone.')) return;
+  try {
+    await db.ref('invoices/' + id).remove();
+    await db.ref('invoiceComments/' + id).remove();
+    audit('INVOICE_DELETED', id, 'invoice', {});
+    toast('Invoice deleted.', 'ok');
+  } catch (e) { toast('Error deleting.', 'err'); }
+}
+
+/* ── INVOICE DETAIL MODAL ───────────────────────────────────── */
+function viewInvoice(id) {
+  const inv = invoices.find(i => i.id === id);
+  if (!inv) return;
+
+  document.getElementById('inv-d-title').textContent = 'Invoice ' + inv.invoiceNo;
+  commentInvoiceId = id;
+
+  const items = inv.lineItems || {};
+  const arr   = Array.isArray(items) ? items : Object.values(items);
+  const rows  = arr.map(li => `<tr><td>${esc(li.description)}</td><td style="text-align:right">${li.qty}</td><td style="text-align:right">${fmt(li.unitPrice)}</td><td style="text-align:right;font-weight:700;">${fmt(li.lineTotal)}</td></tr>`).join('');
+
+  db.ref('invoiceComments/' + id).once('value', snap => {
+    const cmts = toArr(snap.val()).sort((a,b) => (a.timestamp||0)-(b.timestamp||0));
+    const cmtHtml = cmts.map(c => `
+      <div class="comment-card">
+        <div class="cmt-meta">${esc(c.authorName)} · ${tsLabel(c.timestamp)}</div>
+        <div class="cmt-text">${esc(c.text)}</div>
+      </div>`).join('');
+
+    document.getElementById('inv-d-body').innerHTML = `
+      <div class="f3" style="margin-bottom:14px;">
+        <div><div class="sec-label">Date</div><div style="font-weight:600;">${fmtDate(inv.date)}</div></div>
+        <div><div class="sec-label">Status</div><span class="pill ${inv.status.toLowerCase()}">${inv.status}</span></div>
+        <div><div class="sec-label">Period</div><div>${esc(periods.find(p=>p.id===inv.periodId)?.name||'—')}</div></div>
+      </div>
+      <div class="f2" style="margin-bottom:14px;">
+        <div><div class="sec-label">Vendor</div><div style="font-weight:600;">${esc(inv.vendor)}</div></div>
+        <div><div class="sec-label">Category</div><div>${esc(inv.category||'—')}</div></div>
+      </div>
+      <div class="f2" style="margin-bottom:14px;">
+        <div><div class="sec-label">Project Name</div><div>${esc(inv.projectName||'—')}</div></div>
+        <div><div class="sec-label">Project Ref</div><div>${esc(inv.projectRef||'—')}</div></div>
+      </div>
+      <div class="f2" style="margin-bottom:16px;">
+        <div><div class="sec-label">Requested By</div><div>${esc(inv.requestedBy||'—')}</div></div>
+        <div><div class="sec-label">Purchased By</div><div>${esc(inv.purchasedByName||'—')}</div></div>
+      </div>
+      ${inv.notes ? `<div style="margin-bottom:14px;"><div class="sec-label">Notes</div><div>${esc(inv.notes)}</div></div>` : ''}
+      <div class="divider"></div>
+      <div class="sec-label">Line Items</div>
+      <div class="tbl-wrap" style="margin-bottom:8px;">
+        <table class="li-table">
+          <thead><tr><th>Description</th><th style="text-align:right">Qty</th><th style="text-align:right">Unit Price</th><th style="text-align:right">Total</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <div style="text-align:right;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--pur);">Grand Total: ${fmt(inv.grandTotal)} KWD</div>
+      <div class="divider"></div>
+      <div class="sec-label">Comments (${cmts.length})</div>
+      ${cmtHtml || '<div style="color:var(--muted);font-size:13px;margin-bottom:10px;">No comments yet.</div>'}
+      <button class="btn out sm" style="margin-top:8px;" onclick="openComment()">+ Add Comment</button>
+    `;
+    openBackdrop('inv-detail-bd');
+  });
+}
+
+/* ─ Comments ─ */
+function openComment() { openBackdrop('comment-bd'); }
+
+async function saveComment() {
+  const text = document.getElementById('cmt-text').value.trim();
+  if (!text) { toast('Comment cannot be empty.', 'err'); return; }
+  try {
+    await db.ref('invoiceComments/' + commentInvoiceId).push({
+      authorUid: CU.uid, authorName: CU.name, text, timestamp: Date.now()
+    });
+    audit('COMMENT_ADDED', commentInvoiceId, 'invoice', { text: text.slice(0,80) });
+    document.getElementById('cmt-text').value = '';
+    closeBackdrop('comment-bd');
+    toast('Comment posted.', 'ok');
+    viewInvoice(commentInvoiceId);
+  } catch (e) { toast('Error posting comment.', 'err'); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CASH ADVANCES
+═══════════════════════════════════════════════════════════════ */
+function getAdvanceSpent(adv) {
+  return invoices.filter(i => i.periodId === adv.periodId && i.purchasedByPersonId === adv.personId && i.status === 'Submitted').reduce((s, i) => s + (parseFloat(i.grandTotal)||0), 0);
+}
+
+function getAdvanceStatus(adv) {
+  const spent    = getAdvanceSpent(adv);
+  const returned = parseFloat(adv.cashReturned || 0);
+  const rem      = parseFloat(adv.amount||0) - spent - returned;
+  if (rem < -0.0005) return 'Overspent';
+  if (Math.abs(rem) < 0.0005) return 'Settled';
+  return 'Open';
+}
+
+function refreshAdvanceStatuses() {
+  // Recompute and save advance statuses when invoices change
+  advances.forEach(adv => {
+    const newStatus = getAdvanceStatus(adv);
+    if (newStatus !== adv.status) {
+      db.ref('advances/' + adv.id).update({ status: newStatus });
+    }
+  });
+}
+
+function openNewAdvance() {
+  const card = document.getElementById('adv-form-card');
+  card.style.display = 'block';
+  document.getElementById('adv-form-title').textContent = 'New Cash Advance';
+  document.getElementById('af-id').value       = '';
+  document.getElementById('af-amount').value   = '';
+  document.getElementById('af-date').value     = today();
+  document.getElementById('af-notes').value    = '';
+  document.getElementById('af-person').value   = '';
+}
+
+function closeAdvForm() { document.getElementById('adv-form-card').style.display='none'; }
+
+async function saveAdvance() {
+  const personSel  = document.getElementById('af-person');
+  const personId   = personSel.value;
+  const personName = personId ? (personSel.options[personSel.selectedIndex]?.text || '') : '';
+  const amount     = parseFloat(document.getElementById('af-amount').value) || 0;
+  const date       = document.getElementById('af-date').value;
+  const notes      = document.getElementById('af-notes').value.trim();
+
+  if (!personId) { toast('Select a person.', 'err'); return; }
+  if (!amount || amount <= 0) { toast('Enter a valid amount.', 'err'); return; }
+  if (!date) { toast('Date is required.', 'err'); return; }
+  if (!activePeriodId) { toast('No active period.', 'err'); return; }
+
+  const person = people.find(p => p.id === personId);
+  const site   = person?.site || CU.site || 'B';
+
+  const data = {
+    periodId: activePeriodId, personId, personName: personName.replace(/ \(Site [AB]\)$/,''),
+    amount, date, givenByUid: CU.uid, givenByName: CU.name,
+    site, notes, status: 'Open', cashReturned: 0, createdAt: Date.now()
+  };
+
+  try {
+    const ref = await db.ref('advances').push(data);
+    audit('ADVANCE_GIVEN', ref.key, 'advance', { personName: data.personName, amount });
+    toast('Advance recorded.', 'ok');
+    closeAdvForm();
+  } catch (e) { toast('Error saving advance.', 'err'); console.error(e); }
+}
+
+function renderAdvances() {
+  const pid    = activePeriodId;
+  const list   = advances.filter(a => a.periodId === pid).sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
+  const grid   = document.getElementById('adv-grid');
+  const empty  = document.getElementById('adv-empty');
+
+  if (!list.length) { grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display = 'none';
+
+  grid.innerHTML = list.map(adv => {
+    const spent    = getAdvanceSpent(adv);
+    const returned = parseFloat(adv.cashReturned || 0);
+    const rem      = parseFloat(adv.amount||0) - spent - returned;
+    const status   = getAdvanceStatus(adv);
+    const invCount = invoices.filter(i => i.periodId === adv.periodId && i.purchasedByPersonId === adv.personId && i.status === 'Submitted').length;
+    const initials = (adv.personName||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const canSettle = CU.role === 'admin' || (CU.role === 'entry' && adv.givenByUid === CU.uid);
+    const remColor  = rem < 0 ? 'red' : (rem === 0 ? 'grn' : '');
+    return `
+    <div class="adv-card ${status.toLowerCase()}">
+      <div class="adv-top">
+        <div class="adv-avatar">${initials}</div>
+        <div class="adv-info">
+          <div class="adv-name">${esc(adv.personName)}</div>
+          <div class="adv-meta">${fmtDate(adv.date)} · given by ${esc(adv.givenByName)} · Site ${adv.site}</div>
+        </div>
+        <span class="pill ${status.toLowerCase()}">${status}</span>
+      </div>
+      <div class="adv-nums">
+        <div class="adv-num"><div class="adv-num-label">Advanced</div><div class="adv-num-val">${fmt(adv.amount)}</div></div>
+        <div class="adv-num"><div class="adv-num-label">Spent (${invCount} inv.)</div><div class="adv-num-val">${fmt(spent)}</div></div>
+        <div class="adv-num"><div class="adv-num-label">Returned</div><div class="adv-num-val">${fmt(returned)}</div></div>
+        <div class="adv-num"><div class="adv-num-label">Balance</div><div class="adv-num-val ${remColor}">${fmt(rem)}</div></div>
+      </div>
+      <div class="adv-acts">
+        <button class="btn out sm" onclick="viewAdvanceInvoices('${adv.id}')">View Invoices</button>
+        ${canSettle && status !== 'Settled' ? `<button class="btn out sm" onclick="openReturn('${adv.id}')">Record Return</button>` : ''}
+        ${canSettle && status !== 'Settled' ? `<button class="btn grn sm" onclick="settleAdvance('${adv.id}')">Settle</button>` : ''}
+        ${CU.role === 'admin' ? `<button class="ib del" title="Delete" onclick="deleteAdvance('${adv.id}')">✕</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openReturn(id) {
+  returnAdvanceId = id;
+  const adv = advances.find(a => a.id === id);
+  document.getElementById('ret-amount').value = adv ? fmt(adv.cashReturned||0) : '';
+  document.getElementById('ret-notes').value  = '';
+  openBackdrop('adv-return-bd');
+}
+
+async function saveReturn() {
+  const amount = parseFloat(document.getElementById('ret-amount').value) || 0;
+  const notes  = document.getElementById('ret-notes').value.trim();
+  if (amount < 0) { toast('Amount cannot be negative.', 'err'); return; }
+  const adv = advances.find(a => a.id === returnAdvanceId);
+  if (!adv) return;
+  const newStatus = getAdvanceStatus({ ...adv, cashReturned: amount });
+  try {
+    await db.ref('advances/' + returnAdvanceId).update({ cashReturned: amount, status: newStatus, notes: notes || adv.notes });
+    audit('ADVANCE_RETURN', returnAdvanceId, 'advance', { cashReturned: amount });
+    toast('Return recorded.', 'ok');
+    closeBackdrop('adv-return-bd');
+  } catch (e) { toast('Error saving.', 'err'); }
+}
+
+async function settleAdvance(id) {
+  if (!await cfm('Settle Advance', 'Mark this advance as Settled?')) return;
+  try {
+    await db.ref('advances/' + id).update({ status: 'Settled' });
+    audit('ADVANCE_SETTLED', id, 'advance', {});
+    toast('Advance settled.', 'ok');
+  } catch (e) { toast('Error.', 'err'); }
+}
+
+async function deleteAdvance(id) {
+  if (!await cfm('Delete Advance', 'Delete this advance permanently?')) return;
+  try {
+    await db.ref('advances/' + id).remove();
+    audit('ADVANCE_DELETED', id, 'advance', {});
+    toast('Deleted.', 'ok');
+  } catch (e) { toast('Error.', 'err'); }
+}
+
+function viewAdvanceInvoices(advId) {
+  const adv  = advances.find(a => a.id === advId);
+  if (!adv) return;
+  const linked = invoices.filter(i => i.periodId === adv.periodId && i.purchasedByPersonId === adv.personId && i.status === 'Submitted');
+  const rows   = linked.map(i => `<tr><td class="td-bold">${esc(i.invoiceNo)}</td><td>${esc(i.vendor)}</td><td class="td-amt">${fmt(i.grandTotal)}</td></tr>`).join('');
+  document.getElementById('inv-d-title').textContent = 'Linked Invoices — ' + adv.personName;
+  document.getElementById('inv-d-body').innerHTML = linked.length
+    ? `<table><thead><tr><th>Invoice No</th><th>Vendor</th><th>Amount (KWD)</th></tr></thead><tbody>${rows}</tbody></table>`
+    : '<div class="empty-state"><div class="empty-text">No linked invoices</div></div>';
+  openBackdrop('inv-detail-bd');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REPORTS
+═══════════════════════════════════════════════════════════════ */
+function renderReports() {
+  const pid  = activePeriodId;
+  const pinvs = invoices.filter(i => i.periodId === pid && i.status === 'Submitted');
+  const max   = pinvs.reduce((s, i) => s + (parseFloat(i.grandTotal)||0), 0);
+
+  renderBarChart('rep-by-cat', groupBy(pinvs, i => i.category || 'Uncategorized', i => parseFloat(i.grandTotal)||0), max);
+  renderBarChart('rep-by-purchaser', groupBy(pinvs, i => i.purchasedByName || 'Unknown', i => parseFloat(i.grandTotal)||0), max);
+  renderBarChart('rep-by-vendor', groupBy(pinvs, i => i.vendor, i => parseFloat(i.grandTotal)||0), max);
+
+  const el = document.getElementById('rep-summary');
+  el.innerHTML = `
+    <div class="bar-row"><span class="bar-label">Total Invoices</span><span class="bar-amt" style="font-size:18px;">${pinvs.length}</span></div>
+    <div class="bar-row"><span class="bar-label">Total Amount</span><span class="bar-amt" style="font-size:18px;">${fmt(max)} KWD</span></div>
+    <div class="bar-row"><span class="bar-label">Open Advances</span><span class="bar-amt" style="font-size:18px;">${advances.filter(a=>a.periodId===pid&&a.status==='Open').length}</span></div>
+    <div class="bar-row"><span class="bar-label">Avg Invoice</span><span class="bar-amt">${pinvs.length ? fmt(max/pinvs.length) : '0.000'} KWD</span></div>
+  `;
+}
+
+function groupBy(arr, keyFn, valFn) {
+  const m = {};
+  arr.forEach(item => { const k = keyFn(item); m[k] = (m[k]||0) + valFn(item); });
+  return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,8);
+}
+
+function renderBarChart(id, entries, max) {
+  const el = document.getElementById(id);
+  if (!entries.length) { el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px 0;">No data</div>'; return; }
+  el.innerHTML = entries.map(([label, val]) => {
+    const pct = max > 0 ? (val/max*100) : 0;
+    return `<div class="bar-row">
+      <span class="bar-label" title="${esc(label)}">${esc(label)}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+      <span class="bar-amt">${fmt(val)}</span>
+    </div>`;
+  }).join('');
+}
+
+function exportCSV() {
+  const rows = [['Period','Invoice No','Date','Vendor','Category','Project','Requested By','Purchased By','Entered By','Status','Grand Total (KWD)']];
+  const pid = activePeriodId;
+  const pName = periods.find(p=>p.id===pid)?.name||'';
+  invoices.filter(i=>i.periodId===pid).forEach(i => rows.push([
+    pName, i.invoiceNo||'', i.date||'', i.vendor||'', i.category||'',
+    [i.projectName,i.projectRef].filter(Boolean).join(' · '),
+    i.requestedBy||'', i.purchasedByName||'', i.enteredByName||'', i.status||'',
+    fmt(i.grandTotal)
+  ]));
+  const csv  = rows.map(r => r.map(c => '"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  Object.assign(document.createElement('a'), {href:url, download:'royaleng-invoices-'+today()+'.csv'}).click();
+  URL.revokeObjectURL(url);
+  toast('CSV downloaded.', 'ok');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN: PERIODS
+═══════════════════════════════════════════════════════════════ */
+function openPeriodModal(id) {
+  editingPeriodId = id || null;
+  const pd = id ? periods.find(p=>p.id===id) : null;
+  document.getElementById('period-modal-title').textContent = id ? 'Edit Period' : 'New Period';
+  document.getElementById('pd-name').value    = pd?.name || '';
+  document.getElementById('pd-balance').value = pd?.startingBalance || '';
+  document.getElementById('pd-status').value  = pd?.status || 'Draft';
+  openBackdrop('period-bd');
+}
+
+async function savePeriod() {
+  const name    = document.getElementById('pd-name').value.trim();
+  const balance = parseFloat(document.getElementById('pd-balance').value) || 0;
+  const status  = document.getElementById('pd-status').value;
+  if (!name) { toast('Period name required.', 'err'); return; }
+
+  // Enforce one active period
+  if (status === 'Active') {
+    const current = periods.find(p => p.status === 'Active' && p.id !== editingPeriodId);
+    if (current) { toast('Another period is already Active. Close it first.', 'err'); return; }
+  }
+
+  const data = { name, startingBalance: balance, status, createdByUid: CU.uid, createdAt: Date.now() };
+  try {
+    if (editingPeriodId) {
+      await db.ref('periods/' + editingPeriodId).update({ name, startingBalance: balance, status });
+    } else {
+      await db.ref('periods').push(data);
+    }
+    audit('PERIOD_SAVED', editingPeriodId||'new', 'period', { name, status });
+    toast('Period saved.', 'ok');
+    closeBackdrop('period-bd');
+  } catch (e) { toast('Error saving.', 'err'); }
+}
+
+function renderPeriods() {
+  const tbody = document.getElementById('periods-tbody');
+  const empty = document.getElementById('periods-empty');
+  if (!periods.length) { tbody.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  tbody.innerHTML = periods.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).map(p => `
+    <tr>
+      <td class="td-bold">${esc(p.name)}</td>
+      <td class="td-amt">${fmt(p.startingBalance)} KWD</td>
+      <td><span class="pill ${p.status === 'Active' ? 'active-p' : p.status === 'Closed' ? 'closed-p' : 'draft'}">${p.status}</span></td>
+      <td class="td-muted">${tsLabel(p.createdAt)}</td>
+      <td>
+        <div class="row-acts">
+          <button class="ib" onclick="openPeriodModal('${p.id}')">✏</button>
+          ${p.status !== 'Closed' ? `<button class="ib" title="Close period" onclick="closePeriod('${p.id}')">🔒</button>` : ''}
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+async function closePeriod(id) {
+  if (!await cfm('Close Period', 'Close this period? It will become read-only.')) return;
+  await db.ref('periods/' + id).update({ status: 'Closed' });
+  toast('Period closed.', 'ok');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN: USERS & PEOPLE
+═══════════════════════════════════════════════════════════════ */
+function renderUsersList() {
+  const el = document.getElementById('users-list');
+  el.innerHTML = users.map(u => `
+    <div class="person-item">
+      <div class="pi-left">
+        <div class="pi-avatar">${(u.name||'?')[0].toUpperCase()}</div>
+        <div>
+          <div class="pi-name">${esc(u.name)}</div>
+          <div class="pi-meta">${esc(u.email||'')} · <span class="role-badge ${u.role}" style="font-size:9px;">${u.role}</span></div>
+        </div>
+      </div>
+    </div>`).join('') || '<div style="color:var(--muted);font-size:13px;">No users yet.</div>';
+}
+
+function renderPeopleList() {
+  const el = document.getElementById('people-list');
+  el.innerHTML = people.map(p => `
+    <div class="person-item">
+      <div class="pi-left">
+        <div class="pi-avatar">${(p.name||'?')[0].toUpperCase()}</div>
+        <div>
+          <div class="pi-name">${esc(p.name)}</div>
+          <div class="pi-meta">Site ${p.site}</div>
+        </div>
+      </div>
+      <div class="row-acts">
+        <button class="ib" onclick="openPersonModal('${p.id}')">✏</button>
+        <button class="ib del" onclick="deactivatePerson('${p.id}')">✕</button>
+      </div>
+    </div>`).join('') || '<div style="color:var(--muted);font-size:13px;">No people yet.</div>';
+}
+
+function openPersonModal(id) {
+  editingPersonId = id || null;
+  const p = id ? people.find(x=>x.id===id) : null;
+  document.getElementById('person-modal-title').textContent = id ? 'Edit Person' : 'Add Person';
+  document.getElementById('pm-name').value = p?.name || '';
+  document.getElementById('pm-site').value = p?.site || 'A';
+  openBackdrop('person-bd');
+}
+
+async function savePerson() {
+  const name = document.getElementById('pm-name').value.trim();
+  const site = document.getElementById('pm-site').value;
+  if (!name) { toast('Name is required.', 'err'); return; }
+  try {
+    if (editingPersonId) {
+      await db.ref('people/' + editingPersonId).update({ name, site });
+    } else {
+      await db.ref('people').push({ name, site, active: true });
+    }
+    toast('Person saved.', 'ok');
+    closeBackdrop('person-bd');
+  } catch (e) { toast('Error saving.', 'err'); }
+}
+
+async function deactivatePerson(id) {
+  if (!await cfm('Remove Person', 'Remove this person from the active list?')) return;
+  await db.ref('people/' + id).update({ active: false });
+  toast('Person removed.', 'ok');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   AUDIT TRAIL
+═══════════════════════════════════════════════════════════════ */
+function audit(action, targetId, targetType, changes) {
+  if (!CU) return;
+  db.ref('auditLog').push({ userId: CU.uid, role: CU.role, userName: CU.name, action, targetId: targetId||'', targetType: targetType||'', timestamp: Date.now() }).catch(()=>{});
+}
+
+function renderAudit() {
+  const el = document.getElementById('audit-list');
+  el.innerHTML = auditLog.slice(0,200).map(e => `
+    <div class="audit-row">
+      <span class="a-ts">${tsLabel(e.timestamp)}</span>
+      <span class="a-user">${esc(e.userName||e.userId||'?')}</span>
+      <span class="a-action">${esc(e.action)} <span style="color:var(--muted);">${esc(e.targetType||'')} ${esc(e.targetId||'')}</span></span>
+    </div>`).join('') || '<div style="color:var(--muted);font-size:13px;padding:20px;">No audit entries yet.</div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODAL / CONFIRM HELPERS
+═══════════════════════════════════════════════════════════════ */
+function openBackdrop(id)  { document.getElementById(id).classList.add('open'); }
+function closeBackdrop(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.backdrop').forEach(bd => {
+  bd.addEventListener('click', e => { if (e.target === bd) bd.classList.remove('open'); });
+});
+
+function cfm(title, msg, ok='Confirm') {
+  return new Promise(resolve => {
+    cfmResFn = resolve;
+    document.getElementById('cfm-title').textContent = title;
+    document.getElementById('cfm-msg').textContent   = msg;
+    document.getElementById('cfm-ok').textContent    = ok;
+    openBackdrop('confirm-bd');
+  });
+}
+function cfmResolve(val) { closeBackdrop('confirm-bd'); if (cfmResFn) { cfmResFn(val); cfmResFn=null; } }
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════════════ */
+let _tt;
+function toast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = 'toast show' + (type ? ' '+type : '');
+  clearTimeout(_tt);
+  _tt = setTimeout(()=>el.classList.remove('show'), 3200);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════════════════ */
+function fmt(n)   { return parseFloat(n||0).toFixed(3); }
+function today()  { return new Date().toISOString().split('T')[0]; }
+function esc(s)   { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toArr(o) { if (!o) return []; return Object.entries(o).map(([id,v])=>({id,...v})); }
+
+function fmtDate(d) {
+  if (!d) return '—';
+  const [y,m,day] = d.split('-');
+  const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${parseInt(day,10)} ${mo[parseInt(m,10)-1]} ${y}`;
+}
+
+function tsLabel(ts) {
+  if (!ts) return '—';
+  return new Date(ts).toLocaleString('en-GB', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+/* ── KEYBOARD ─────────────────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.backdrop.open').forEach(b => b.classList.remove('open'));
+    cfmResolve(false);
+  }
+});
 </script>
 </body>
 </html>

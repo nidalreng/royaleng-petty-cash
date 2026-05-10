@@ -1,0 +1,152 @@
+{
+  "rules": {
+
+    "users": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && (root.child('users/' + auth.uid + '/role').val() === 'admin')",
+        "role": {
+          ".validate": "newData.val() === 'admin' || newData.val() === 'entry' || newData.val() === 'manager'"
+        },
+        "name":  { ".validate": "newData.isString() && newData.val().length > 0" },
+        "site":  { ".validate": "newData.val() === 'A' || newData.val() === 'B' || !newData.exists()" },
+        "email": { ".validate": "newData.isString()" },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "people": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users/' + auth.uid + '/role').val() === 'admin'",
+      "$personId": {
+        "name":   { ".validate": "newData.isString() && newData.val().length > 0" },
+        "site":   { ".validate": "newData.val() === 'A' || newData.val() === 'B'" },
+        "active": { ".validate": "newData.isBoolean()" },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "periods": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users/' + auth.uid + '/role').val() === 'admin'",
+      "$periodId": {
+        "name":            { ".validate": "newData.isString() && newData.val().length > 0" },
+        "startingBalance": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "status":          { ".validate": "newData.val() === 'Draft' || newData.val() === 'Active' || newData.val() === 'Closed'" },
+        "createdByUid":    { ".validate": "newData.isString()" },
+        "createdAt":       { ".validate": "newData.isNumber()" },
+        "$other":          { ".validate": false }
+      }
+    },
+
+    "invoices": {
+      ".read": "auth != null",
+      "$invoiceId": {
+        ".write": "auth != null && (
+          root.child('users/' + auth.uid + '/role').val() === 'admin'
+          || (
+            root.child('users/' + auth.uid + '/role').val() === 'entry'
+            && newData.exists()
+            && (
+              (!data.exists() && newData.child('enteredByUid').val() === auth.uid)
+              ||
+              (data.exists()
+               && data.child('status').val() === 'Draft'
+               && data.child('enteredByUid').val() === auth.uid)
+            )
+          )
+        )",
+        ".validate": "newData.hasChildren(['periodId','invoiceNo','date','vendor','enteredByUid','status'])",
+        "invoiceNo":          { ".validate": "newData.isString() && newData.val().length > 0" },
+        "date":               { ".validate": "newData.isString()" },
+        "vendor":             { ".validate": "newData.isString() && newData.val().length > 0" },
+        "periodId":           { ".validate": "newData.isString()" },
+        "enteredByUid":       { ".validate": "newData.isString()" },
+        "status":             { ".validate": "newData.val() === 'Draft' || newData.val() === 'Submitted'" },
+        "grandTotal":         { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "projectName":        { ".validate": "!newData.exists() || newData.isString()" },
+        "projectRef":         { ".validate": "!newData.exists() || newData.isString()" },
+        "category":           { ".validate": "!newData.exists() || newData.isString()" },
+        "requestedBy":        { ".validate": "!newData.exists() || newData.isString()" },
+        "purchasedByPersonId":{ ".validate": "!newData.exists() || newData.isString()" },
+        "purchasedByName":    { ".validate": "!newData.exists() || newData.isString()" },
+        "enteredByName":      { ".validate": "newData.isString()" },
+        "notes":              { ".validate": "!newData.exists() || newData.isString()" },
+        "site":               { ".validate": "!newData.exists() || newData.val() === 'A' || newData.val() === 'B'" },
+        "adminEdited":        { ".validate": "!newData.exists() || newData.isBoolean()" },
+        "createdAt":          { ".validate": "newData.isNumber()" },
+        "updatedAt":          { ".validate": "!newData.exists() || newData.isNumber()" },
+        "lineItems":          { ".validate": "newData.hasChildren()" },
+        "$other":             { ".validate": false }
+      }
+    },
+
+    "invoiceComments": {
+      ".read": "auth != null",
+      "$invoiceId": {
+        "$commentId": {
+          ".write": "auth != null && !data.exists() && newData.child('authorUid').val() === auth.uid",
+          ".validate": "newData.hasChildren(['authorUid','authorName','text','timestamp'])",
+          "authorUid":  { ".validate": "newData.isString() && newData.val() === auth.uid" },
+          "authorName": { ".validate": "newData.isString() && newData.val().length > 0" },
+          "text":       { ".validate": "newData.isString() && newData.val().length > 0" },
+          "timestamp":  { ".validate": "newData.isNumber()" },
+          "$other":     { ".validate": false }
+        }
+      }
+    },
+
+    "advances": {
+      ".read": "auth != null",
+      "$advanceId": {
+        ".write": "auth != null && (
+          root.child('users/' + auth.uid + '/role').val() === 'admin'
+          || (
+            root.child('users/' + auth.uid + '/role').val() === 'entry'
+            && newData.exists()
+            && (
+              (!data.exists() && newData.child('givenByUid').val() === auth.uid)
+              ||
+              (data.exists() && data.child('givenByUid').val() === auth.uid)
+            )
+          )
+        )",
+        ".validate": "newData.hasChildren(['periodId','personId','amount','date','givenByUid','status'])",
+        "periodId":     { ".validate": "newData.isString()" },
+        "personId":     { ".validate": "newData.isString()" },
+        "personName":   { ".validate": "newData.isString()" },
+        "amount":       { ".validate": "newData.isNumber() && newData.val() > 0" },
+        "date":         { ".validate": "newData.isString()" },
+        "givenByUid":   { ".validate": "newData.isString()" },
+        "givenByName":  { ".validate": "newData.isString()" },
+        "site":         { ".validate": "newData.val() === 'A' || newData.val() === 'B'" },
+        "status":       { ".validate": "newData.val() === 'Open' || newData.val() === 'Settled' || newData.val() === 'Overspent'" },
+        "cashReturned": { ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)" },
+        "notes":        { ".validate": "!newData.exists() || newData.isString()" },
+        "createdAt":    { ".validate": "newData.isNumber()" },
+        "$other":       { ".validate": false }
+      }
+    },
+
+    "auditLog": {
+      ".read": "auth != null && root.child('users/' + auth.uid + '/role').val() === 'admin'",
+      ".write": "auth != null",
+      "$logId": {
+        ".validate": "newData.hasChildren(['userId','role','action','timestamp'])",
+        "userId":     { ".validate": "newData.isString() && newData.val() === auth.uid" },
+        "role":       { ".validate": "newData.val() === 'admin' || newData.val() === 'entry' || newData.val() === 'manager'" },
+        "action":     { ".validate": "newData.isString() && newData.val().length > 0" },
+        "targetId":   { ".validate": "!newData.exists() || newData.isString()" },
+        "targetType": { ".validate": "!newData.exists() || newData.isString()" },
+        "timestamp":  { ".validate": "newData.isNumber()" },
+        "$other":     { ".validate": false }
+      }
+    },
+
+    "v2": {
+      ".read": "auth != null && root.child('users/' + auth.uid + '/role').val() === 'admin'",
+      ".write": "auth != null && root.child('users/' + auth.uid + '/role').val() === 'admin'"
+    }
+
+  }
+}

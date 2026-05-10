@@ -1,0 +1,15 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      ".git",
+      ".claude",
+      ".firebaserc",
+      "firebase.json",
+      "database.rules.json"
+    ]
+  },
+  "database": {
+    "rules": "database.rules.json"
+  }
+}
