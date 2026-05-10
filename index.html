@@ -652,9 +652,17 @@ const FC = {
   messagingSenderId: "701547062928",
   appId:             "1:701547062928:web:78070c3b9d17b4c38eda15"
 };
+// Catch any JS error during init so it surfaces in the UI, not just the console
+window.addEventListener('error', ev => {
+  console.error('[init error]', ev.message, ev.filename, ev.lineno);
+  const errEl = document.getElementById('l-err');
+  if (errEl) errEl.textContent = 'App failed to load: ' + ev.message;
+});
+
 firebase.initializeApp(FC);
 const auth = firebase.auth();
 const db   = firebase.database();
+console.log('[init] Firebase ready — auth:', !!auth, '| db:', !!db);
 
 db.ref('.info/connected').on('value', snap => {
   const on = snap.val() === true;
@@ -736,17 +744,28 @@ function bootApp(user, ur) {
 document.getElementById('l-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
 async function doLogin() {
+  console.log('[login] doLogin() fired');
   const email = document.getElementById('l-email').value.trim();
   const pass  = document.getElementById('l-pass').value;
   const btn   = document.getElementById('l-btn');
+  console.log('[login] email:', email, '| auth ready:', !!auth);
   showLoginErr('');
   if (!email || !pass) { showLoginErr('Email and password are required.'); return; }
   btn.disabled = true; btn.textContent = 'Signing in…';
   try {
     await auth.signInWithEmailAndPassword(email, pass);
   } catch (e) {
-    const msgs = { 'auth/user-not-found':'No account with that email.', 'auth/wrong-password':'Incorrect password.', 'auth/invalid-email':'Invalid email address.', 'auth/too-many-requests':'Too many attempts. Try again later.' };
-    showLoginErr(msgs[e.code] || 'Sign-in failed. Check your credentials.');
+    console.error('[login] auth error:', e.code, e.message);
+    const msgs = {
+      'auth/user-not-found':      'No account with that email.',
+      'auth/wrong-password':      'Incorrect password.',
+      'auth/invalid-credential':  'Incorrect email or password.',   // SDK v9+
+      'auth/invalid-email':       'Invalid email address.',
+      'auth/operation-not-allowed':'Email/password sign-in is not enabled — check Firebase Console → Authentication.',
+      'auth/too-many-requests':   'Too many attempts. Try again later.',
+      'auth/network-request-failed':'Network error. Check your connection.'
+    };
+    showLoginErr(msgs[e.code] || ('Sign-in failed: ' + e.code));
     btn.disabled = false; btn.textContent = 'Sign In →';
   }
 }
